@@ -565,13 +565,107 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
     id: uniform.id,
     name: uniform.name,
     category: uniform.category,
-    dept: uniform.dept,
-    description: uniform.description,
+    dept: uniform.dept || 'General',
+    description: uniform.description || '',
     portada: uniform.portada || '',
-    imageUrls: uniform.imageUrls.join(', '),
+    imageUrls: uniform.imageUrls?.join(', ') || '',
     male: uniform.maleIds,
     female: uniform.femaleIds
   });
+
+  const handleMaleChange = (field, value) => setFormData({...formData, male: {...formData.male, [field]: value}});
+  const handleFemaleChange = (field, value) => setFormData({...formData, female: {...formData.female, [field]: value}});
+
+  return (
+    <div className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl overflow-y-auto">
+      <div className="bg-[#0a0a0a] w-full max-w-5xl rounded-[3rem] p-10 border border-white/10 my-10">
+        
+        {/* Cabecera */}
+        <div className="flex justify-between items-center mb-10">
+          <div>
+            <h2 className="text-4xl font-black italic uppercase tracking-tighter text-white">EDITAR <span className="text-blue-600">LOGÍSTICA</span></h2>
+            <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">Modificando: {uniform.name}</p>
+          </div>
+          <button onClick={onClose} className="bg-white/5 p-4 rounded-2xl hover:bg-red-600 text-white transition-all">
+            <X size={20}/>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          
+          {/* COLUMNA IZQUIERDA: Datos Generales */}
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <span className="text-[10px] font-bold text-zinc-500 uppercase ml-2">Nombre del Uniforme</span>
+                <input value={formData.name} className="bg-[#161616] p-4 rounded-xl border border-white/5 focus:border-blue-600 outline-none text-white font-bold" onChange={e => setFormData({...formData, name: e.target.value})} />
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="text-[10px] font-bold text-zinc-500 uppercase ml-2">URL Portada Principal</span>
+                <input value={formData.portada} className="bg-[#161616] p-4 rounded-xl border border-white/5 focus:border-blue-600 outline-none text-white font-bold text-xs" onChange={e => setFormData({...formData, portada: e.target.value})} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <span className="text-[10px] font-bold text-zinc-500 uppercase ml-2">Categoría</span>
+                <select value={formData.category} className="bg-[#161616] p-4 rounded-xl border border-white/5 focus:border-blue-600 outline-none text-white font-bold" onChange={e => setFormData({...formData, category: e.target.value})}>
+                  <option value="OFICIAL">OFICIAL</option>
+                  <option value="ESPECIALIZADO">ESPECIALIZADO</option>
+                  <option value="GALA">GALA</option>
+                  <option value="CADETE">CADETE</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="text-[10px] font-bold text-zinc-500 uppercase ml-2">Departamento</span>
+                <select value={formData.dept} className="bg-[#161616] p-4 rounded-xl border border-white/5 focus:border-blue-600 outline-none text-white font-bold" onChange={e => setFormData({...formData, dept: e.target.value})}>
+                  <option value="General">General</option>
+                  <option value="Aviación">Aviación</option>
+                  <option value="Rescate Marítimo">Rescate Marítimo</option>
+                  <option value="USAR">USAR</option>
+                  <option value="泡沫 (Bombas)">Bombas</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] font-bold text-zinc-500 uppercase ml-2">Descripción</span>
+              <textarea value={formData.description} className="bg-[#161616] p-4 rounded-xl border border-white/5 focus:border-blue-600 outline-none text-white h-28 text-sm" onChange={e => setFormData({...formData, description: e.target.value})} />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] font-bold text-zinc-500 uppercase ml-2">Galería de Imágenes (Separadas por comas)</span>
+              <input value={formData.imageUrls} className="bg-[#161616] p-4 rounded-xl border border-white/5 focus:border-blue-600 outline-none text-white text-xs" onChange={e => setFormData({...formData, imageUrls: e.target.value})} />
+            </div>
+          </div>
+
+          {/* COLUMNA DERECHA: IDs de Ropa */}
+          <div className="grid grid-cols-2 gap-4">
+            {['male', 'female'].map(g => (
+              <div key={g} className="bg-white/5 p-6 rounded-[2rem] border border-white/5">
+                <h3 className="font-black uppercase text-[10px] mb-4 text-blue-500 tracking-[0.2em]">{g === 'male' ? 'Equipación Hombre' : 'Equipación Mujer'}</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {['helmet', 'jacket', 'shirt', 'bag', 'arms', 'legs', 'shoes', 'decal', 'chain', 'vest', 'mask'].map(f => (
+                    <div key={f} className="flex flex-col gap-1">
+                      <span className="text-[8px] text-zinc-500 font-bold uppercase ml-1">
+                        {f === 'helmet' ? 'Casco' : f === 'decal' ? 'Parche/Decal' : f === 'vest' ? 'Chaleco' : f}
+                      </span>
+                      <input value={formData[g][f]} placeholder="ID" className="bg-black/40 p-2 rounded-lg border border-white/5 text-[10px] text-white outline-none focus:border-blue-600 text-center" onChange={e => g === 'male' ? handleMaleChange(f, e.target.value) : handleFemaleChange(f, e.target.value)} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <button onClick={() => onSave(formData)} className="w-full bg-blue-600 py-6 rounded-2xl font-black uppercase tracking-widest text-white hover:bg-blue-500 transition-all shadow-xl shadow-blue-900/20 mt-10">
+          Actualizar Registro de Base de Datos
+        </button>
+      </div>
+    </div>
+  );
+};
 
   const handleMaleChange = (field, value) => setFormData({...formData, male: {...formData.male, [field]: value}});
   const handleFemaleChange = (field, value) => setFormData({...formData, female: {...formData.female, [field]: value}});
