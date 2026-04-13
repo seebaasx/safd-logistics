@@ -36,7 +36,13 @@ import {
 
 // --- CONFIGURACIÓN FIREBASE (Mantén tu configuración aquí) ---
 const firebaseConfig = {
-  // Pega aquí tus credenciales si no las tienes configuradas
+   apiKey: "AIzaSyBjvokaJaOjwLkZ1BAbFYtn6T1VUF0Iz1A",
+  authDomain: "safd-uniformidad.firebaseapp.com",
+  projectId: "safd-uniformidad",
+  storageBucket: "safd-uniformidad.firebasestorage.app",
+  messagingSenderId: "429691809293",
+  appId: "1:429691809293:web:0a02fe8fe5ea2b854c2f44",
+  measurementId: "G-6EY004XWGN"
 };
 
 const app = initializeApp(firebaseConfig);
