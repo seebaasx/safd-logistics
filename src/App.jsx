@@ -58,9 +58,9 @@ const appId = 'safd-logistics-v3';
 const LOGO_URL = "https://r2.fivemanage.com/rlMpa4HCjCLM3vQVrxiNo/imagen_2026-04-13_191540450.png";
 
 const HERO_IMAGES = [
-  "image_0c83c3.jpg", 
-  "image_0c83de.jpg", 
-  "image_0c8688.jpg"
+  "https://r2.fivemanage.com/rlMpa4HCjCLM3vQVrxiNo/imagen_2026-04-13_222621960.png", 
+  "https://r2.fivemanage.com/rlMpa4HCjCLM3vQVrxiNo/imagen_2026-04-13_224238602.png", 
+  "https://r2.fivemanage.com/rlMpa4HCjCLM3vQVrxiNo/imagen_2026-04-13_224256139.png"
 ];
 
 // --- COMPONENTES AUXILIARES ---
