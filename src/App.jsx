@@ -413,17 +413,29 @@ export default function App() {
   };
 
   const saveUniform = async (formData) => {
-    const { male, female, imageUrls, ...rest } = formData;
-    const urls = imageUrls.split(',').map(s => s.trim()).filter(s => s);
-  const updateUniform = async (formData) => {
+  const { male, female, imageUrls, portada, ...rest } = formData;
+  const urls = imageUrls.split(',').map(s => s.trim()).filter(s => s);
+  
+  const uniformsRef = collection(db, 'artifacts', appId, 'public', 'data', 'uniforms');
+  await addDoc(uniformsRef, {
+    ...rest,
+    portada: portada || urls[0],
+    maleIds: male,
+    femaleIds: female,
+    imageUrls: urls
+  });
+  
+  setShowAddModal(false);
+  if (typeof notify === 'function') notify("Nuevo uniforme registrado.");
+};
+
+const updateUniform = async (formData) => {
   const { id, male, female, imageUrls, portada, ...rest } = formData;
   
-  // Procesamos las URLs por si se han editado
-  const urls = typeof imageUrls === 'string' 
-    ? imageUrls.split(',').map(s => s.trim()).filter(s => s) 
+  const urls = typeof imageUrls === 'string'
+    ? imageUrls.split(',').map(s => s.trim()).filter(s => s)
     : imageUrls;
   
-  // Referencia al documento específico en Firebase
   const uniformRef = doc(db, 'artifacts', appId, 'public', 'data', 'uniforms', id);
   
   await setDoc(uniformRef, {
@@ -435,21 +447,9 @@ export default function App() {
     updatedAt: new Date().toISOString()
   }, { merge: true });
   
-  setEditingUniform(null); // Cerramos el modal
+  setEditingUniform(null);
   if (typeof notify === 'function') notify("Logística actualizada correctamente.");
 };
-    
-    const uniformsRef = collection(db, 'artifacts', appId, 'public', 'data', 'uniforms');
-    await addDoc(uniformsRef, {
-      ...rest,
-      maleIds: male, // Guardamos con el nombre de propiedad que espera el detalle
-      femaleIds: female, // Guardamos con el nombre de propiedad que espera el detalle
-      imageUrls: urls.length > 0 ? urls : ["https://images.unsplash.com/photo-1516541196182-6bdb0516ed27?q=80&w=800"]
-    });
-    
-    setShowAddModal(false);
-    notify("Base de datos de uniformes actualizada.");
-  };
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-red-700/50 font-sans tracking-tight">
