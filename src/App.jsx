@@ -104,8 +104,8 @@ const UniformCard = ({ uniform, isAdmin, onDelete, onSelect }) => (
     onClick={() => onSelect(uniform)}
     className="group relative bg-zinc-900 rounded-[2.5rem] overflow-hidden border border-white/5 cursor-pointer hover:border-red-600/50 transition-all duration-500"
   >
-    <div className="aspect-[4/5] overflow-hidden">
-      <img src={uniform.imageUrls ? uniform.imageUrls[0] : uniform.imageUrl} className="w-full h-full object-cover group-hover:scale-105 transition duration-1000 opacity-70 group-hover:opacity-100" alt={uniform.name} />
+    <div className="aspect-[square] overflow-hidden">
+      <img src={uniform.portada || (uniform.imageUrls ? uniform.imageUrls[0] : uniform.imageUrl)} className="w-full h-full object-cover group-hover:scale-105 transition duration-1000 opacity-80 group-hover:opacity-100" alt={uniform.name} />
     </div>
     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent text-left p-8 flex flex-col justify-end">
       <span className="text-[10px] font-black uppercase text-[#d4af37] tracking-[0.3em]">{uniform.category}</span>
@@ -180,22 +180,27 @@ const UniformDetail = ({ uniform, onClose }) => (
                 </div>
                 <div className="space-y-4">
                   {Object.entries({
-                    'Chaqueta': gender === 'Hombre' ? uniform.maleIds?.jacket : uniform.femaleIds?.jacket,
-                    'Camiseta': gender === 'Hombre' ? uniform.maleIds?.shirt : uniform.femaleIds?.shirt,
-                    'Bolsa': gender === 'Hombre' ? uniform.maleIds?.bag : uniform.femaleIds?.bag,
-                    'Brazos': gender === 'Hombre' ? uniform.maleIds?.arms : uniform.femaleIds?.arms,
-                    'Piernas': gender === 'Hombre' ? uniform.maleIds?.legs : uniform.femaleIds?.legs,
-                    'Zapatos': gender === 'Hombre' ? uniform.maleIds?.shoes : uniform.femaleIds?.shoes,
-                    'Insignia': gender === 'Hombre' ? uniform.maleIds?.decal : uniform.femaleIds?.decal,
-                    'Cadena': gender === 'Hombre' ? uniform.maleIds?.chain : uniform.femaleIds?.chain,
-                    'Chaleco': gender === 'Hombre' ? uniform.maleIds?.vest : uniform.femaleIds?.vest,
-                    'Máscara': gender === 'Hombre' ? uniform.maleIds?.mask : uniform.femaleIds?.mask,
-                  }).map(([k, v]) => (
-                    <div key={k} className="flex justify-between items-center group/item">
-                      <span className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">{k}</span>
-                      <span className="text-xs font-mono font-bold text-white bg-white/5 px-3 py-1 rounded-lg border border-white/10 group-hover/item:border-red-600/50 transition">{v || '0'}</span>
-                    </div>
-                  ))}
+  'Casco': gender === 'Hombre' ? uniform.maleIds?.helmet : uniform.femaleIds?.helmet,
+  'Chaqueta': gender === 'Hombre' ? uniform.maleIds?.jacket : uniform.femaleIds?.jacket,
+  'Camiseta': gender === 'Hombre' ? uniform.maleIds?.shirt : uniform.femaleIds?.shirt,
+  'Bolsa': gender === 'Hombre' ? uniform.maleIds?.bag : uniform.femaleIds?.bag,
+  'Brazos': gender === 'Hombre' ? uniform.maleIds?.arms : uniform.femaleIds?.arms,
+  'Piernas': gender === 'Hombre' ? uniform.maleIds?.legs : uniform.femaleIds?.legs,
+  'Zapatos': gender === 'Hombre' ? uniform.maleIds?.shoes : uniform.femaleIds?.shoes,
+  'Calcomanía': gender === 'Hombre' ? uniform.maleIds?.decal : uniform.femaleIds?.decal,
+  'Cadena': gender === 'Hombre' ? uniform.maleIds?.chain : uniform.femaleIds?.chain,
+  'Chaleco': gender === 'Hombre' ? uniform.maleIds?.vest : uniform.femaleIds?.vest,
+  'Máscara': gender === 'Hombre' ? uniform.maleIds?.mask : uniform.femaleIds?.mask,
+})
+.filter(([_, v]) => v && v !== '' && v !== '0') // <--- ESTO ES LO QUE OCULTA LOS VACÍOS
+.map(([k, v]) => (
+  <div key={k} className="flex justify-between items-center group/item">
+    <span className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">{k}</span>
+    <span className="text-xs font-mono font-bold text-white bg-white/5 px-3 py-1 rounded-lg border border-white/10 group-hover/item:border-red-600/50 transition">
+      {v}
+    </span>
+  </div>
+))}
                 </div>
               </div>
             ))}
@@ -250,10 +255,21 @@ const LoginModal = ({ onLogin, onClose }) => {
 
 const AddUniformModal = ({ onSave, onClose }) => {
   const [formData, setFormData] = useState({
-    name: '', category: 'Reglamentario', dept: 'General', description: '', imageUrls: '',
-    male: { jacket: '', shirt: '', bag: '', arms: '', legs: '', shoes: '', decal: '', chain: '', vest: '', mask: '' },
-    female: { jacket: '', shirt: '', bag: '', arms: '', legs: '', shoes: '', decal: '', chain: '', vest: '', mask: '' }
-  });
+  name: '', 
+  category: 'Reglamentario', 
+  dept: 'General', 
+  description: '', 
+  imageUrls: '', 
+  portada: '', // <--- Nueva propiedad para la imagen 1080x1080
+  male: { 
+    helmet: '', // <--- Añadido Casco Hombre
+    jacket: '', shirt: '', bag: '', arms: '', legs: '', shoes: '', decal: '', chain: '', vest: '', mask: '' 
+  },
+  female: { 
+    helmet: '', // <--- Añadido Casco Mujer
+    jacket: '', shirt: '', bag: '', arms: '', legs: '', shoes: '', decal: '', chain: '', vest: '', mask: '' 
+  }
+});
 
   const handleMaleChange = (field, val) => setFormData(prev => ({...prev, male: {...prev.male, [field]: val}}));
   const handleFemaleChange = (field, val) => setFormData(prev => ({...prev, female: {...prev.female, [field]: val}}));
@@ -273,6 +289,13 @@ const AddUniformModal = ({ onSave, onClose }) => {
               <label className="text-[#d4af37] text-[10px] font-black uppercase tracking-[0.2em] block mb-3 italic">Información Principal</label>
               <div className="space-y-4">
                 <input value={formData.name} placeholder="Nombre del Uniforme" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 focus:border-[#d4af37] outline-none font-bold" onChange={e => setFormData({...formData, name: e.target.value})} />
+                {/* 2. PEGA ESTE AQUÍ ABAJO (La Portada) */}
+<input 
+  value={formData.portada} 
+  placeholder="URL Portada Principal (1080x1080)" 
+  className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 focus:border-[#d4af37] outline-none font-bold" 
+  onChange={e => setFormData({...formData, portada: e.target.value})} 
+/>
                 <div className="grid grid-cols-2 gap-4">
                   <select value={formData.category} className="bg-[#161616] p-4 rounded-xl border border-white/5 focus:border-[#d4af37] outline-none font-bold" onChange={e => setFormData({...formData, category: e.target.value})}>
                     <option>Reglamentario</option><option>Departamento</option><option>Actualizado</option>
