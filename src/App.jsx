@@ -415,6 +415,29 @@ export default function App() {
   const saveUniform = async (formData) => {
     const { male, female, imageUrls, ...rest } = formData;
     const urls = imageUrls.split(',').map(s => s.trim()).filter(s => s);
+  const updateUniform = async (formData) => {
+  const { id, male, female, imageUrls, portada, ...rest } = formData;
+  
+  // Procesamos las URLs por si se han editado
+  const urls = typeof imageUrls === 'string' 
+    ? imageUrls.split(',').map(s => s.trim()).filter(s => s) 
+    : imageUrls;
+  
+  // Referencia al documento específico en Firebase
+  const uniformRef = doc(db, 'artifacts', appId, 'public', 'data', 'uniforms', id);
+  
+  await setDoc(uniformRef, {
+    ...rest,
+    portada: portada,
+    maleIds: male,
+    femaleIds: female,
+    imageUrls: urls,
+    updatedAt: new Date().toISOString()
+  }, { merge: true });
+  
+  setEditingUniform(null); // Cerramos el modal
+  if (typeof notify === 'function') notify("Logística actualizada correctamente.");
+};
     
     const uniformsRef = collection(db, 'artifacts', appId, 'public', 'data', 'uniforms');
     await addDoc(uniformsRef, {
@@ -473,7 +496,7 @@ export default function App() {
               <img src={LOGO_URL} className="h-48 w-48 mx-auto mb-10 drop-shadow-[0_0_50px_rgba(185,28,28,0.5)] animate-pulse" alt="Logo Principal" />
               <h2 className="text-[#d4af37] text-xs font-black tracking-[1.5em] uppercase mb-6">LOGISTICS • SYSTEM</h2>
               <h1 className="text-7xl md:text-[11rem] font-black italic uppercase leading-[0.75] tracking-tighter mb-10 text-white">SAFD <span className="text-red-700 block md:inline">PORTAL</span></h1>
-              <p className="max-w-2xl mx-auto text-zinc-400 text-xl font-medium leading-relaxed italic">Gestión táctica de activos y estandarización de componentes técnicos del Estado de San Andreas.</p>
+              <p className="max-w-2xl mx-auto text-zinc-400 text-xl font-medium leading-relaxed italic">Semper paratus.</p>
             </div>
           </section>
 
