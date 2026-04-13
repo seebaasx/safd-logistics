@@ -420,7 +420,7 @@ export default function App() {
       )}
 
       <footer className="py-40 border-t border-white/5 text-center opacity-30">
-        <p className="text-zinc-700 text-[10px] uppercase font-black tracking-[1em] mb-4 text-center">SAFD UNIFORMIDAD • STATE OF SAN ANDREAS</p>
+        <p className="text-zinc-700 text-[10px] uppercase font-black tracking-[1em] mb-4 text-center">SAFD UNIFORMIDAD • STATE OF SAN ANDREAS - Desarrollado por SAGA Social Media Studio</p>
       </footer>
     </div>
   );
