@@ -226,6 +226,7 @@ const AddUniformModal = ({ onSave, onClose }) => {
   );
 };
 
+// --- MODAL EDICIÓN CON TU ESTILO ORIGINAL ---
 const EditUniformModal = ({ uniform, onSave, onClose }) => {
   const [formData, setFormData] = useState({
     id: uniform.id, name: uniform.name, category: uniform.category, dept: uniform.dept || 'General', description: uniform.description || '', portada: uniform.portada || '',
@@ -238,18 +239,21 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 text-white text-left">
       <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose}></div>
-      <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-red-600/40 shadow-2xl max-h-[90vh] overflow-y-auto">
-        <h2 className="text-red-600 text-2xl font-black italic uppercase mb-10 pb-6 border-b border-white/5">MODIFICAR UNIFORMIDAD</h2>
+      <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-[#d4af37]/40 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/5">
+          <h2 className="text-[#d4af37] text-2xl font-black italic uppercase tracking-widest">MODIFICAR UNIFORMIDAD</h2>
+          <X onClick={onClose} className="text-zinc-600 hover:text-white cursor-pointer transition-all" />
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="space-y-6">
-            <input value={formData.name} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, name: e.target.value})} />
-            <input value={formData.portada} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, portada: e.target.value})} />
+            <input value={formData.name} placeholder="Nombre" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 focus:border-[#d4af37] outline-none font-bold" onChange={e => setFormData({...formData, name: e.target.value})} />
+            <input value={formData.portada} placeholder="URL Portada (1080x1080)" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 focus:border-[#d4af37] outline-none font-bold" onChange={e => setFormData({...formData, portada: e.target.value})} />
             <div className="grid grid-cols-2 gap-4">
               <select value={formData.category} className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option><option>Actualizado</option></select>
               <select value={formData.dept} className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>VOLUNTEER</option></select>
             </div>
-            <textarea value={formData.description} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
-            <textarea value={formData.imageUrls} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 text-[10px]" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
+            <textarea value={formData.description} placeholder="Descripción..." className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-white" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
+            <textarea value={formData.imageUrls} placeholder="Galería (URLs por comas)" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-xs font-mono text-white" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
           </div>
           <div className="grid grid-cols-2 gap-8">
             {['male', 'female'].map(g => (
@@ -366,7 +370,7 @@ export default function App() {
             {HERO_IMAGES.map((img, idx) => <img key={idx} src={img} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentHeroIdx ? 'opacity-40' : 'opacity-0'}`} alt="Hero" />)}
             <div className="relative z-20 text-center">
               {/* Animación animate-pulse restaurada aquí */}
-              <img src={LOGO_URL} className="h-48 w-48 mx-auto mb-10 drop-shadow-[0_0_50px_rgba(185,28,28,0.5)] animate-pulse" alt="Logo" />
+              <img src={LOGO_URL} className="h-48 w-48 mx-auto mb-10 drop-shadow-[0_0_50px_rgba(185,28,28,0.5)] animate-pulse" alt="Logo Principal" />
               <h2 className="text-[#d4af37] text-xs font-black tracking-[1.5em] mb-6 uppercase italic">UNIFORMIDAD • SISTEMA</h2>
               <h1 className="text-7xl md:text-[11rem] font-black italic uppercase leading-none tracking-tighter text-white">SAFD <span className="text-red-700">PORTAL</span></h1>
             </div>
