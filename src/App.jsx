@@ -101,31 +101,49 @@ const UniformCarousel = ({ images }) => {
   );
 };
 
-const UniformCard = ({ uniform, isAdmin, onDelete, onSelect }) => (
+const UniformCard = ({ uniform, isAdmin, onDelete, onSelect, onEdit }) => (
   <div 
     onClick={() => onSelect(uniform)}
     className="group relative bg-zinc-900 rounded-[2.5rem] overflow-hidden border border-white/5 cursor-pointer hover:border-red-600/50 transition-all duration-500"
   >
-    <div className="aspect-[square] overflow-hidden">
-      <img src={uniform.portada || (uniform.imageUrls ? uniform.imageUrls[0] : uniform.imageUrl)} className="w-full h-full object-cover group-hover:scale-105 transition duration-1000 opacity-80 group-hover:opacity-100" alt={uniform.name} />
+    {/* Imagen de Portada */}
+    <div className="aspect-square overflow-hidden">
+      <img 
+        src={uniform.portada || (uniform.imageUrls ? uniform.imageUrls[0] : uniform.imageUrl)} 
+        className="w-full h-full object-cover group-hover:scale-105 transition duration-1000 opacity-80 group-hover:opacity-100" 
+        alt={uniform.name} 
+      />
     </div>
-    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent text-left p-8 flex flex-col justify-end">
+
+    {/* Info de la Tarjeta */}
+    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent text-left p-8 flex flex-col justify-end">
       <span className="text-[10px] font-black uppercase text-[#d4af37] tracking-[0.3em]">{uniform.category}</span>
       <div className="flex justify-between items-end">
-        <h4 className="text-3xl font-black italic uppercase leading-none mt-1">{uniform.name}</h4>
-        <div className="bg-white/10 backdrop-blur-md p-3 rounded-full group-hover:bg-red-600 group-hover:scale-110 transition duration-300">
-          <ChevronRight size={20} />
+        <h4 className="text-2xl font-black italic uppercase leading-none mt-1 text-white">{uniform.name}</h4>
+        <div className="bg-white/10 backdrop-blur-md p-3 rounded-full group-hover:bg-red-600 group-hover:scale-110 transition duration-300 text-white">
+          <ChevronRight size={18} />
         </div>
       </div>
     </div>
+
+    {/* BOTONES DE ADMINISTRACIÓN */}
     {isAdmin && (
-      <button 
-        type="button"
-        onClick={(e) => { e.stopPropagation(); onDelete(uniform.id); }}
-        className="absolute top-6 right-6 bg-red-900/90 p-2.5 rounded-xl hover:bg-red-600 z-10 transition-all hover:scale-110"
-      >
-        <Trash2 size={18} />
-      </button>
+      <div className="absolute top-6 right-6 flex gap-2 z-10">
+        <button 
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onEdit(uniform); }}
+          className="bg-blue-600/90 p-2.5 rounded-xl hover:bg-blue-500 transition-all hover:scale-110 text-white"
+        >
+          <Edit2 size={18} />
+        </button>
+        <button 
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onDelete(uniform.id); }}
+          className="bg-red-900/90 p-2.5 rounded-xl hover:bg-red-600 transition-all hover:scale-110 text-white"
+        >
+          <Trash2 size={18} />
+        </button>
+      </div>
     )}
   </div>
 );
