@@ -478,7 +478,7 @@ export default function App() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
               {/* Filtramos estrictamente por los que NO tienen departamento asignado para el catálogo general */}
               {uniforms.filter(u => u.dept === 'General' || !u.dept || u.dept === '').map(u => (
-                <UniformCard key={u.id} uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} />
+                <UniformCard key={u.id} uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} onEdit={setEditingUniform} />
               ))}
             </div>
           </section>
@@ -491,7 +491,7 @@ export default function App() {
           <h2 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter mb-20 text-white">{selectedDept}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
             {uniforms.filter(u => u.dept === selectedDept).map(u => (
-              <UniformCard key={u.id} uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} />
+              <UniformCard key={u.id} uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} onEdit={setEditingUniform} />
             ))}
           </div>
         </div>
@@ -501,6 +501,7 @@ export default function App() {
       {selectedUniform && <UniformDetail uniform={selectedUniform} onClose={() => setSelectedUniform(null)} />}
       {showAddModal && <AddUniformModal onSave={saveUniform} onClose={() => setShowAddModal(false)} />}
       {showLoginModal && <LoginModal onLogin={() => setIsAdmin(true)} onClose={() => setShowLoginModal(false)} />}
+      {editingUniform && <EditUniformModal uniform={editingUniform} onSave={updateUniform} onClose={() => setEditingUniform(null)} />}
       
       {notification && (
         <div className={`fixed bottom-10 right-10 z-[300] p-6 rounded-3xl shadow-2xl border flex items-center gap-4 animate-in slide-in-from-right duration-500 ${notification.type === 'error' ? 'bg-red-950 border-red-600' : 'bg-zinc-900 border-[#d4af37]/30'}`}>
@@ -516,3 +517,58 @@ export default function App() {
     </div>
   );
 }
+const EditUniformModal = ({ uniform, onSave, onClose }) => {
+  const [formData, setFormData] = useState({
+    id: uniform.id,
+    name: uniform.name,
+    category: uniform.category,
+    dept: uniform.dept,
+    description: uniform.description,
+    portada: uniform.portada || '',
+    imageUrls: uniform.imageUrls.join(', '),
+    male: uniform.maleIds,
+    female: uniform.femaleIds
+  });
+
+  const handleMaleChange = (field, value) => setFormData({...formData, male: {...formData.male, [field]: value}});
+  const handleFemaleChange = (field, value) => setFormData({...formData, female: {...formData.female, [field]: value}});
+
+  return (
+    <div className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl overflow-y-auto">
+      <div className="bg-[#0a0a0a] w-full max-w-4xl rounded-[3rem] p-10 border border-white/10 my-10">
+        <div className="flex justify-between items-center mb-10">
+          <div>
+            <h2 className="text-4xl font-black italic uppercase tracking-tighter text-white">EDITAR <span className="text-blue-600">LOGÍSTICA</span></h2>
+            <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">Modificando: {uniform.name}</p>
+          </div>
+          <button onClick={onClose} className="bg-white/5 p-4 rounded-2xl hover:bg-red-600 text-white transition-all"><X size={20}/></button>
+        </div>
+
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-4">
+            <input value={formData.name} placeholder="Nombre" className="bg-[#161616] p-4 rounded-xl border border-white/5 focus:border-blue-600 outline-none text-white font-bold" onChange={e => setFormData({...formData, name: e.target.value})} />
+            <input value={formData.portada} placeholder="URL Portada (1080x1080)" className="bg-[#161616] p-4 rounded-xl border border-white/5 focus:border-blue-600 outline-none text-white font-bold" onChange={e => setFormData({...formData, portada: e.target.value})} />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-8">
+            {['male', 'female'].map(g => (
+              <div key={g} className="bg-white/5 p-6 rounded-3xl">
+                <h3 className="font-black uppercase text-[10px] mb-4 text-zinc-500 tracking-[0.2em]">{g === 'male' ? 'IDs Hombre' : 'IDs Mujer'}</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {['helmet', 'jacket', 'shirt', 'bag', 'arms', 'legs', 'shoes', 'decal', 'chain', 'vest', 'mask'].map(f => (
+                    <div key={f} className="flex flex-col">
+                      <span className="text-[8px] text-zinc-600 font-bold uppercase mb-1">{f}</span>
+                      <input value={formData[g][f]} placeholder="ID" className="bg-black/40 p-2 rounded border border-white/5 text-[10px] text-white outline-none focus:border-blue-600" onChange={e => g === 'male' ? handleMaleChange(f, e.target.value) : handleFemaleChange(f, e.target.value)} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button onClick={() => onSave(formData)} className="w-full bg-blue-600 py-5 rounded-2xl font-black uppercase tracking-widest text-white hover:bg-blue-500 transition-all shadow-xl shadow-blue-900/20">Guardar Cambios en Base de Datos</button>
+        </div>
+      </div>
+    </div>
+  );
+};
