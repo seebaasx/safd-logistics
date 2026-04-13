@@ -12,7 +12,8 @@ import {
   doc, 
   onSnapshot, 
   updateDoc, 
-  addDoc, 
+  addDoc,
+  setDoc,
   deleteDoc 
 } from 'firebase/firestore';
 import { 
@@ -26,6 +27,7 @@ import {
   Biohazard,
   Plus,
   Trash2,
+  Edit2,
   X,
   ChevronRight,
   ChevronLeft,
@@ -351,7 +353,7 @@ export default function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [currentHeroIdx, setCurrentHeroIdx] = useState(0);
   const [notification, setNotification] = useState(null);
-
+  const [editingUniform, setEditingUniform] = useState(null);
   useEffect(() => {
     const timer = setInterval(() => setCurrentHeroIdx((prev) => (prev + 1) % HERO_IMAGES.length), 6000);
     return () => clearInterval(timer);
