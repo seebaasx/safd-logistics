@@ -365,7 +365,7 @@ export default function App() {
           </section>
 
           <section className="max-w-7xl mx-auto px-6 py-32">
-            <h2 className="text-5xl font-black italic uppercase mb-20 text-left">Divisiones <span className="text-red-700">Tácticas</span></h2>
+            <h2 className="text-5xl font-black italic uppercase mb-20 text-left">Divisiones <span className="text-red-700">San Andreas Fire Department</span></h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               <DepartmentCard icon={Plane} title="AIR OPS" desc="Extinción aérea y montaña." onClick={() => {setView('department'); setSelectedDept('AIR OPS');}} />
               <DepartmentCard icon={Search} title="FIRE MARSHAL" desc="Investigación y prevención." onClick={() => {setView('department'); setSelectedDept('FIRE MARSHAL');}} />
@@ -379,7 +379,7 @@ export default function App() {
           </section>
 
           <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left">
-            <h2 className="text-5xl font-black italic uppercase mb-10">Manual <span className="text-red-700">Vestuario</span></h2>
+            <h2 className="text-5xl font-black italic uppercase mb-10">Unifirmidad  <span className="text-red-700">General</span></h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
               {uniforms.filter(u => u.dept === 'General' || !u.dept).map(u => <UniformCard key={u.id} uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} onEdit={setEditingUniform} />)}
             </div>
