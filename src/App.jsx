@@ -379,7 +379,7 @@ export default function App() {
           </section>
 
           <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left">
-            <h2 className="text-5xl font-black italic uppercase mb-10">Unifirmidad  <span className="text-red-700">General</span></h2>
+            <h2 className="text-5xl font-black italic uppercase mb-10">Uniformidad  <span className="text-red-700">General</span></h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
               {uniforms.filter(u => u.dept === 'General' || !u.dept).map(u => <UniformCard key={u.id} uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} onEdit={setEditingUniform} />)}
             </div>
