@@ -136,7 +136,7 @@ const LoginModal = ({ onLogin, onClose }) => {
     else { setError(true); setTimeout(() => setError(false), 2000); }
   };
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 text-white">
       <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={onClose}></div>
       <div className={`relative bg-[#111] w-full max-w-md p-10 rounded-3xl border ${error ? 'border-red-600' : 'border-[#d4af37]/30'} shadow-2xl`}>
         <h2 className="text-[#d4af37] text-xl font-black italic uppercase text-center mb-8 tracking-widest">SISTEMA UNIFORMIDAD</h2>
@@ -161,7 +161,7 @@ const AddUniformModal = ({ onSave, onClose }) => {
       <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose}></div>
       <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-[#d4af37]/40 shadow-2xl max-h-[90vh] overflow-y-auto text-left">
         <h2 className="text-[#d4af37] text-2xl font-black italic uppercase mb-10 pb-6 border-b border-white/5">REGISTRAR NUEVA UNIFORMIDAD</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-white">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="space-y-6">
             <input placeholder="Nombre" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, name: e.target.value})} />
             <input placeholder="URL Portada" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
@@ -174,7 +174,7 @@ const AddUniformModal = ({ onSave, onClose }) => {
           </div>
           <div className="grid grid-cols-2 gap-8">
             {['male', 'female'].map(g => (
-              <div key={g} className="space-y-2">
+              <div key={g} className="space-y-2 text-white">
                 <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-400' : 'text-pink-400'}`}>{g === 'male' ? 'HOMBRE' : 'MUJER'}</p>
                 {UNIFORM_FIELDS.map(f => (
                   <div key={f.key} className="flex flex-col">
@@ -205,7 +205,7 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 text-white text-left">
       <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose}></div>
       <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-red-600/40 shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/5">
+        <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/5 text-white">
             <h2 className="text-red-600 text-2xl font-black italic uppercase tracking-widest">MODIFICAR UNIFORMIDAD</h2>
             <X onClick={onClose} className="cursor-pointer hover:text-red-600 transition" />
         </div>
@@ -222,7 +222,7 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
           </div>
           <div className="grid grid-cols-2 gap-8">
             {['male', 'female'].map(g => (
-              <div key={g} className="space-y-2">
+              <div key={g} className="space-y-2 text-white">
                 <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-400' : 'text-pink-400'}`}>{g.toUpperCase()}</p>
                 {UNIFORM_FIELDS.map(f => (
                   <div key={f.key} className="flex flex-col">
