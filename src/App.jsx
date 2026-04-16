@@ -48,6 +48,7 @@ const UNIFORM_FIELDS = [
   { key: 'decal', label: 'Calcomanías' },
   { key: 'helmet', label: 'Cascos' },
   { key: 'glasses', label: 'Gafas' }
+
 ];
 
 // --- COMPONENTES AUXILIARES ---
