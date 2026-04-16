@@ -111,7 +111,9 @@ const UniformDetail = ({ uniform, onClose }) => (
       <div className="w-full lg:w-1/2 p-8 lg:p-14 overflow-y-auto text-white">
         <div className="mb-12">
           <span className="bg-red-600 text-[10px] font-black px-5 py-2 rounded-full uppercase tracking-widest italic">{uniform.category}</span>
-          <h2 className="text-5xl lg:text-7xl font-black italic uppercase leading-[0.85] mt-6">{uniform.name}</h2>
+          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black italic uppercase leading-tight mt-6 break-words text-white">
+  {uniform.name}
+</h2>
           <p className="mt-6 text-zinc-500 font-medium text-base leading-relaxed">{uniform.description}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -181,7 +183,7 @@ const AddUniformModal = ({ onSave, onClose }) => {
             <input placeholder="URL Portada" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
             <div className="grid grid-cols-2 gap-4">
               <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option></select>
-              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>VOLUNTEER</option></select>
+              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>TTU</option></select>
             </div>
             <textarea placeholder="Descripción..." className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
             <textarea placeholder="Galería URLs" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
@@ -390,7 +392,7 @@ export default function App() {
               <DepartmentCard icon={Flame} title="WILDLAND" desc="Incendios forestales." onClick={() => {setView('department'); setSelectedDept('WILDLAND');}} />
               <DepartmentCard icon={Stethoscope} title="PARAMEDIC" desc="Urgencias críticas." onClick={() => {setView('department'); setSelectedDept('PARAMEDIC');}} />
               <DepartmentCard icon={Biohazard} title="HAZMAT" color="bg-yellow-600" desc="Materiales químicos." onClick={() => {setView('department'); setSelectedDept('HAZMAT');}} />
-              <DepartmentCard icon={Users} title="VOLUNTEER" color="bg-blue-800" desc="Personal en prácticas." onClick={() => {setView('department'); setSelectedDept('VOLUNTEER');}} />
+              <DepartmentCard icon={Users} title="VOLUNTEER" color="bg-blue-800" desc="Tactial Trauma Unit." onClick={() => {setView('department'); setSelectedDept('VOLUNTEER');}} />
             </div>
           </section>
 
