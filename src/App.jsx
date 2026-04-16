@@ -1,31 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { 
-  getAuth, 
-  signInAnonymously, 
-  onAuthStateChanged 
-} from 'firebase/auth';
-import { 
-  getFirestore, 
-  collection, 
-  doc, 
-  onSnapshot, 
-  updateDoc, 
-  addDoc,
-  setDoc,
-  deleteDoc,
-  // ADICIÓN 1: Funciones para ordenar y guardar en masa
-  query,
-  orderBy,
-  writeBatch 
+  getFirestore, collection, doc, onSnapshot, 
+  addDoc, setDoc, deleteDoc, query, orderBy, writeBatch 
 } from 'firebase/firestore';
 import { 
-  Shield, Plane, Search, Anchor, Flame, Stethoscope, Radio, Biohazard, Plus, Trash2, Edit2, X, ChevronRight, ChevronLeft, User, Users, Lock, Unlock, AlertCircle, ArrowLeft
+  Shield, Plane, Search, Anchor, Flame, Stethoscope, Radio, Biohazard, 
+  Plus, Trash2, Edit2, X, ChevronRight, ChevronLeft, Lock, Unlock, 
+  AlertCircle, ArrowLeft 
 } from 'lucide-react';
-// ADICIÓN 2: Librería para el Drag & Drop
 import { Reorder } from "framer-motion";
 
-// --- CONFIGURACIÓN E INICIALIZACIÓN ---
+// --- CONFIGURACIÓN ---
 const firebaseConfig = {
   apiKey: "AIzaSyBjvokaJaOjwLkZ1BAbFYtn6T1VUF0Iz1A",
   authDomain: "safd-uniformidad.firebaseapp.com",
@@ -94,7 +81,7 @@ const UniformCard = ({ uniform, isAdmin, onDelete, onSelect, onEdit }) => (
       </div>
     </div>
     {isAdmin && (
-      <div className="absolute top-6 right-6 flex gap-2 z-10">
+      <div className="absolute top-6 right-6 flex gap-2 z-20">
         <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(uniform); }} className="bg-blue-600/90 p-2.5 rounded-xl hover:bg-blue-500 transition-all hover:scale-110 text-white shadow-lg"><Edit2 size={18} /></button>
         <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(uniform.id); }} className="bg-red-900/90 p-2.5 rounded-xl hover:bg-red-600 transition-all hover:scale-110 text-white shadow-lg"><Trash2 size={18} /></button>
       </div>
@@ -115,7 +102,7 @@ const DepartmentCard = ({ icon: Icon, title, desc, onClick, color = "bg-red-600"
 
 const UniformDetail = ({ uniform, onClose }) => (
   <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 text-left">
-    <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl animate-in fade-in duration-500" onClick={onClose}></div>
+    <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl" onClick={onClose}></div>
     <div className="relative bg-[#0a0a0a] w-full max-w-6xl rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[90vh] animate-in zoom-in-95 duration-300">
       <div className="w-full lg:w-1/2 relative bg-zinc-950 min-h-[40vh] lg:min-h-0">
         <UniformCarousel images={uniform.imageUrls || [uniform.imageUrl]} />
@@ -138,9 +125,7 @@ const UniformDetail = ({ uniform, onClose }) => (
                   return (
                     <div key={f.key} className="flex justify-between items-center group/item">
                       <span className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">{f.label}</span>
-                      <span className="text-xs font-mono font-bold text-white bg-white/5 px-3 py-1 rounded-lg border border-white/10 group-hover/item:border-red-600/50 transition">
-                        {val}
-                      </span>
+                      <span className="text-xs font-mono font-bold text-white bg-white/5 px-3 py-1 rounded-lg border border-white/10 group-hover/item:border-red-600/50 transition">{val}</span>
                     </div>
                   );
                 })}
@@ -152,8 +137,6 @@ const UniformDetail = ({ uniform, onClose }) => (
     </div>
   </div>
 );
-
-// --- MODALES ADMINISTRACIÓN ---
 
 const LoginModal = ({ onLogin, onClose }) => {
   const [pass, setPass] = useState('');
@@ -170,7 +153,7 @@ const LoginModal = ({ onLogin, onClose }) => {
         <h2 className="text-[#d4af37] text-xl font-black italic uppercase text-center mb-8 tracking-widest">SISTEMA UNIFORMIDAD</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <input type="password" autoFocus className="w-full bg-[#1c1c1c] p-5 rounded-xl border border-white/5 focus:border-[#d4af37] outline-none text-white text-center text-2xl tracking-[0.4em]" value={pass} onChange={e => setPass(e.target.value)} />
-          <button type="submit" className="w-full bg-[#b91c1c] py-5 rounded-xl font-black uppercase text-white hover:bg-red-600 transition">AUTORIZAR ACCESO</button>
+          <button type="submit" className="w-full bg-[#b91c1c] py-5 rounded-xl font-black uppercase text-white hover:bg-red-600 transition shadow-xl">AUTORIZAR ACCESO</button>
         </form>
       </div>
     </div>
@@ -190,16 +173,16 @@ const AddUniformModal = ({ onSave, onClose }) => {
       <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose}></div>
       <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-[#d4af37]/40 shadow-2xl max-h-[90vh] overflow-y-auto text-left">
         <h2 className="text-[#d4af37] text-2xl font-black italic uppercase mb-10 pb-6 border-b border-white/5">REGISTRAR NUEVA UNIFORMIDAD</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-white">
           <div className="space-y-6">
-            <input placeholder="Nombre" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, name: e.target.value})} />
-            <input placeholder="URL Portada" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, portada: e.target.value})} />
+            <input placeholder="Nombre" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, name: e.target.value})} />
+            <input placeholder="URL Portada" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
             <div className="grid grid-cols-2 gap-4">
-              <select className="bg-[#161616] p-4 rounded-xl border border-white/5" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option></select>
-              <select className="bg-[#161616] p-4 rounded-xl border border-white/5" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>VOLUNTEER</option></select>
+              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option></select>
+              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>VOLUNTEER</option></select>
             </div>
-            <textarea placeholder="Descripción" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
-            <textarea placeholder="Galería URLs" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px]" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
+            <textarea placeholder="Descripción" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
+            <textarea placeholder="Galería URLs" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
           </div>
           <div className="grid grid-cols-2 gap-8">
             {['male', 'female'].map(g => (
@@ -208,7 +191,7 @@ const AddUniformModal = ({ onSave, onClose }) => {
                 {UNIFORM_FIELDS.map(f => (
                   <div key={f.key} className="flex flex-col">
                     <span className="text-[8px] text-zinc-600 uppercase font-bold">{f.label}</span>
-                    <input placeholder="ID" className="w-full bg-black/40 p-2 rounded border border-white/5 text-[10px]" onChange={e => g === 'male' ? handleMaleChange(f.key, e.target.value) : handleFemaleChange(f.key, e.target.value)} />
+                    <input placeholder="ID" className="w-full bg-black/40 p-2 rounded border border-white/5 text-[10px] text-white outline-none" onChange={e => g === 'male' ? handleMaleChange(f.key, e.target.value) : handleFemaleChange(f.key, e.target.value)} />
                   </div>
                 ))}
               </div>
@@ -240,14 +223,14 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="space-y-6">
-            <input value={formData.name} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, name: e.target.value})} />
-            <input value={formData.portada} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, portada: e.target.value})} />
+            <input value={formData.name} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, name: e.target.value})} />
+            <input value={formData.portada} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
             <div className="grid grid-cols-2 gap-4">
               <select value={formData.category} className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option><option>Actualizado</option></select>
               <select value={formData.dept} className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>VOLUNTEER</option></select>
             </div>
-            <textarea value={formData.description} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
-            <textarea value={formData.imageUrls} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px]" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
+            <textarea value={formData.description} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
+            <textarea value={formData.imageUrls} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
           </div>
           <div className="grid grid-cols-2 gap-8">
             {['male', 'female'].map(g => (
@@ -256,20 +239,20 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
                 {UNIFORM_FIELDS.map(f => (
                   <div key={f.key} className="flex flex-col">
                     <span className="text-[8px] text-zinc-600 uppercase font-bold">{f.label}</span>
-                    <input value={formData[g][f.key] || ''} className="bg-black/40 p-2 rounded border border-white/5 text-[10px]" onChange={e => g === 'male' ? handleMaleChange(f.key, e.target.value) : handleFemaleChange(f.key, e.target.value)} />
+                    <input value={formData[g][f.key] || ''} className="bg-black/40 p-2 rounded border border-white/5 text-[10px] text-white outline-none" onChange={e => g === 'male' ? handleMaleChange(f.key, e.target.value) : handleFemaleChange(f.key, e.target.value)} />
                   </div>
                 ))}
               </div>
             ))}
           </div>
         </div>
-        <button onClick={() => onSave(formData)} className="w-full bg-red-700 py-5 rounded-2xl font-black uppercase text-white hover:bg-red-600 transition mt-10 shadow-xl">GUARDAR CAMBIOS</button>
+        <button onClick={() => onSave(formData)} className="w-full bg-red-700 py-5 rounded-2xl font-black uppercase text-white hover:bg-red-600 transition mt-10 shadow-xl">GUARDAR CAMBIOS EN UNIFORMIDAD</button>
       </div>
     </div>
   );
 };
 
-// --- APP ---
+// --- APP PRINCIPAL ---
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -295,11 +278,9 @@ export default function App() {
     signInAnonymously(auth);
   }, []);
 
-  // ADICIÓN 3: Snapshot actualizado para leer por sortOrder
   useEffect(() => {
     if (!user) return;
     const uniformsRef = collection(db, 'artifacts', appId, 'public', 'data', 'uniforms');
-    // Creamos la query con el orden
     const q = query(uniformsRef, orderBy('sortOrder', 'asc'));
     
     return onSnapshot(q, (snapshot) => {
@@ -308,22 +289,19 @@ export default function App() {
     });
   }, [user]);
 
-  // ADICIÓN 4: Función para guardar el nuevo orden en Firebase
   const handleReorder = async (newOrder) => {
-    setUniforms(newOrder); // Actualización instantánea en UI
+    setUniforms(newOrder);
     if (!isAdmin) return;
-
     const batch = writeBatch(db);
     newOrder.forEach((item, index) => {
       const ref = doc(db, 'artifacts', appId, 'public', 'data', 'uniforms', item.id);
       batch.update(ref, { sortOrder: index });
     });
-    
     try {
       await batch.commit();
-      notify("Orden actualizado en la red.");
+      notify("Orden sincronizado.");
     } catch (e) {
-      notify("Error al sincronizar orden.");
+      notify("Error al sincronizar.");
     }
   };
 
@@ -341,7 +319,7 @@ export default function App() {
       maleIds: male, 
       femaleIds: female, 
       imageUrls: urls,
-      sortOrder: uniforms.length // Se añade al final por defecto
+      sortOrder: uniforms.length 
     });
     setShowAddModal(false);
     notify("Uniformidad registrada.");
@@ -365,7 +343,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-red-700/50 font-sans tracking-tight">
-      <nav className="fixed w-full z-[60] bg-black/60 backdrop-blur-xl border-b border-white/10 h-20 flex items-center justify-between px-6 text-white">
+      <nav className="fixed w-full z-[60] bg-black/60 backdrop-blur-xl border-b border-white/10 h-20 flex items-center justify-between px-6">
         <div className="flex items-center gap-4 cursor-pointer" onClick={() => {setView('landing'); setSelectedDept(null);}}>
           <img src={LOGO_URL} className="h-12 w-12" alt="SAFD" />
           <div className="text-left hidden sm:block">
@@ -375,7 +353,7 @@ export default function App() {
         </div>
         <div className="flex gap-6">
           {!isAdmin ? (
-            <button onClick={() => setShowLoginModal(true)} className="bg-red-700 px-6 py-3 rounded-full text-[10px] font-black uppercase text-white shadow-lg">JEFATURA</button>
+            <button onClick={() => setShowLoginModal(true)} className="bg-red-700 px-6 py-3 rounded-full text-[10px] font-black uppercase text-white shadow-lg tracking-widest">JEFATURA</button>
           ) : (
             <div className="flex gap-3">
               <button onClick={() => setShowAddModal(true)} className="bg-green-600 p-3 rounded-full text-white"><Plus size={16}/></button>
@@ -387,7 +365,7 @@ export default function App() {
 
       {view === 'landing' ? (
         <div className="animate-in fade-in duration-1000">
-          <section className="relative h-screen flex items-center justify-center overflow-hidden">
+          <section className="relative h-screen flex items-center justify-center overflow-hidden text-white">
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/80 z-10"></div>
             {HERO_IMAGES.map((img, idx) => <img key={idx} src={img} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentHeroIdx ? 'opacity-40' : 'opacity-0'}`} alt="Hero" />)}
             <div className="relative z-20 text-center">
@@ -397,7 +375,7 @@ export default function App() {
             </div>
           </section>
 
-          <section className="max-w-7xl mx-auto px-6 py-32">
+          <section className="max-w-7xl mx-auto px-6 py-32 text-white">
             <h2 className="text-5xl font-black italic uppercase mb-20 text-left">Divisiones <span className="text-red-700">San Andreas Fire Department</span></h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               <DepartmentCard icon={Plane} title="AIR OPS" desc="Extinción aérea y montaña." onClick={() => {setView('department'); setSelectedDept('AIR OPS');}} />
@@ -411,27 +389,12 @@ export default function App() {
             </div>
           </section>
 
-          <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left">
-            <h2 className="text-5xl font-black italic uppercase mb-10">Uniformidad  <span className="text-red-700">General</span></h2>
-            
-            {/* ADICIÓN 5: Uso de Reorder.Group con tu diseño original */}
+          <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left text-white">
+            <h2 className="text-5xl font-black italic uppercase mb-10">Uniformidad <span className="text-red-700">General</span></h2>
             {isAdmin ? (
-              <Reorder.Group 
-                axis="x" 
-                values={uniforms.filter(u => u.dept === 'General' || !u.dept)} 
-                onReorder={handleReorder}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10"
-              >
+              <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === 'General' || !u.dept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                 {uniforms.filter(u => u.dept === 'General' || !u.dept).map(u => (
-                  <Reorder.Item key={u.id} value={u}>
-                    <UniformCard 
-                      uniform={u} 
-                      isAdmin={isAdmin} 
-                      onDelete={deleteUniform} 
-                      onSelect={setSelectedUniform} 
-                      onEdit={setEditingUniform} 
-                    />
-                  </Reorder.Item>
+                  <Reorder.Item key={u.id} value={u}><UniformCard uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} onEdit={setEditingUniform} /></Reorder.Item>
                 ))}
               </Reorder.Group>
             ) : (
@@ -445,21 +408,12 @@ export default function App() {
         </div>
       ) : (
         <div className="pt-32 pb-32 max-w-7xl mx-auto px-6 text-left min-h-screen text-white">
-          <button onClick={() => {setView('landing'); setSelectedDept(null);}} className="text-zinc-500 hover:text-red-500 mb-12 font-black uppercase text-[10px] flex items-center gap-2"><ArrowLeft size={16}/> Volver</button>
+          <button onClick={() => {setView('landing'); setSelectedDept(null);}} className="text-zinc-500 hover:text-red-500 mb-12 font-black uppercase text-[10px] flex items-center gap-2 tracking-widest"><ArrowLeft size={16}/> Volver</button>
           <h2 className="text-6xl md:text-8xl font-black italic uppercase mb-20">{selectedDept}</h2>
-          
-          {/* También permitimos reordenar dentro de cada departamento si eres admin */}
           {isAdmin ? (
-            <Reorder.Group 
-              axis="x" 
-              values={uniforms.filter(u => u.dept === selectedDept)} 
-              onReorder={handleReorder}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10"
-            >
+            <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === selectedDept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
               {uniforms.filter(u => u.dept === selectedDept).map(u => (
-                <Reorder.Item key={u.id} value={u}>
-                  <UniformCard uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} onEdit={setEditingUniform} />
-                </Reorder.Item>
+                <Reorder.Item key={u.id} value={u}><UniformCard uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} onEdit={setEditingUniform} /></Reorder.Item>
               ))}
             </Reorder.Group>
           ) : (
