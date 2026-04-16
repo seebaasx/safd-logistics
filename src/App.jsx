@@ -3,7 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { 
   getFirestore, collection, doc, onSnapshot, 
-  addDoc, setDoc, deleteDoc, query, orderBy, writeBatch 
+  addDoc, setDoc, deleteDoc, query, writeBatch 
 } from 'firebase/firestore';
 import { 
   Shield, Plane, Search, Anchor, Flame, Stethoscope, Radio, Biohazard, 
@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Reorder } from "framer-motion";
 
-// --- CONFIGURACIÓN (Copiada directamente de tu captura image_ca6449.png) ---
+// --- CONFIGURACIÓN (Tus llaves de la captura image_ca6449.png) ---
 const firebaseConfig = {
   apiKey: "AIzaSyBjvokaJaOjwLkZ1BAbFYtn6T1VUF0Iz1A",
   authDomain: "safd-uniformidad.firebaseapp.com",
@@ -48,7 +48,6 @@ const UNIFORM_FIELDS = [
   { key: 'decal', label: 'Calcomanías' },
   { key: 'helmet', label: 'Cascos' },
   { key: 'glasses', label: 'Gafas' }
-
 ];
 
 // --- COMPONENTES AUXILIARES ---
@@ -61,8 +60,8 @@ const UniformCarousel = ({ images }) => {
       <img src={images[idx]} className="w-full h-full object-cover animate-in fade-in duration-700" alt="Vista" />
       {images.length > 1 && (
         <>
-          <button type="button" onClick={(e) => { e.stopPropagation(); setIdx((idx - 1 + images.length) % images.length); }} className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full hover:bg-red-600 transition opacity-0 group-hover/carousel:opacity-100 z-20"><ChevronLeft size={20}/></button>
-          <button type="button" onClick={(e) => { e.stopPropagation(); setIdx((idx + 1) % images.length); }} className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full hover:bg-red-600 transition opacity-0 group-hover/carousel:opacity-100 z-20"><ChevronRight size={20}/></button>
+          <button type="button" onClick={(e) => { e.stopPropagation(); setIdx((idx - 1 + images.length) % images.length); }} className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full hover:bg-red-600 transition opacity-0 group-hover/carousel:opacity-100 z-20 text-white"><ChevronLeft size={20}/></button>
+          <button type="button" onClick={(e) => { e.stopPropagation(); setIdx((idx + 1) % images.length); }} className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full hover:bg-red-600 transition opacity-0 group-hover/carousel:opacity-100 z-20 text-white"><ChevronRight size={20}/></button>
         </>
       )}
     </div>
@@ -82,7 +81,7 @@ const UniformCard = ({ uniform, isAdmin, onDelete, onSelect, onEdit }) => (
       </div>
     </div>
     {isAdmin && (
-      <div className="absolute top-6 right-6 flex gap-2 z-20">
+      <div className="absolute top-6 right-6 flex gap-2 z-10">
         <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(uniform); }} className="bg-blue-600/90 p-2.5 rounded-xl hover:bg-blue-500 transition-all hover:scale-110 text-white shadow-lg"><Edit2 size={18} /></button>
         <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(uniform.id); }} className="bg-red-900/90 p-2.5 rounded-xl hover:bg-red-600 transition-all hover:scale-110 text-white shadow-lg"><Trash2 size={18} /></button>
       </div>
@@ -94,7 +93,7 @@ const DepartmentCard = ({ icon: Icon, title, desc, onClick, color = "bg-red-600"
   <div onClick={onClick} className="group bg-zinc-900/30 border border-white/5 p-8 rounded-[2.5rem] hover:border-red-600/30 transition-all duration-500 hover:translate-y-[-5px] cursor-pointer text-left">
     <div className={`w-14 h-14 ${color} rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-red-900/20 group-hover:scale-110 transition duration-500`}><Icon size={28} className="text-white" /></div>
     <div className="flex justify-between items-start">
-      <h3 className="text-xl font-black mb-3 italic uppercase tracking-tight">{title}</h3>
+      <h3 className="text-xl font-black mb-3 italic uppercase tracking-tight text-white">{title}</h3>
       <ChevronRight size={18} className="text-zinc-700 group-hover:text-red-500 transition" />
     </div>
     <p className="text-zinc-500 text-sm leading-relaxed font-medium">{desc}</p>
@@ -102,14 +101,14 @@ const DepartmentCard = ({ icon: Icon, title, desc, onClick, color = "bg-red-600"
 );
 
 const UniformDetail = ({ uniform, onClose }) => (
-  <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 text-left">
-    <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl animate-in fade-in duration-500" onClick={onClose}></div>
-    <div className="relative bg-[#0a0a0a] w-full max-w-6xl rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row h-full lg:h-auto max-h-[90vh] animate-in zoom-in-95 duration-300">
+  <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 text-left">
+    <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl" onClick={onClose}></div>
+    <div className="relative bg-[#0a0a0a] w-full max-w-6xl rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[90vh] animate-in zoom-in-95 duration-300">
       <div className="w-full lg:w-1/2 relative bg-zinc-950 min-h-[40vh] lg:min-h-0">
         <UniformCarousel images={uniform.imageUrls || [uniform.imageUrl]} />
-        <button onClick={onClose} className="absolute top-8 left-8 bg-black/60 p-4 rounded-full hover:bg-red-600 transition-all z-30"><X/></button>
+        <button onClick={onClose} className="absolute top-8 left-8 bg-black/60 p-4 rounded-full hover:bg-red-600 transition-all z-30 text-white"><X/></button>
       </div>
-      <div className="w-full lg:w-1/2 p-8 lg:p-14 overflow-y-auto">
+      <div className="w-full lg:w-1/2 p-8 lg:p-14 overflow-y-auto text-white">
         <div className="mb-12">
           <span className="bg-red-600 text-[10px] font-black px-5 py-2 rounded-full uppercase tracking-widest italic">{uniform.category}</span>
           <h2 className="text-5xl lg:text-7xl font-black italic uppercase leading-[0.85] mt-6">{uniform.name}</h2>
@@ -117,7 +116,7 @@ const UniformDetail = ({ uniform, onClose }) => (
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {['Hombre', 'Mujer'].map(gender => (
-            <div key={gender} className="bg-white/[0.03] backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/5">
+            <div key={gender} className="bg-white/[0.03] p-8 rounded-[2.5rem] border border-white/5">
               <h3 className={`font-black italic uppercase tracking-widest mb-6 pb-4 border-b border-white/10 ${gender === 'Hombre' ? 'text-blue-400' : 'text-pink-400'}`}>{gender.toUpperCase()}</h3>
               <div className="space-y-3">
                 {UNIFORM_FIELDS.map(f => {
@@ -139,6 +138,8 @@ const UniformDetail = ({ uniform, onClose }) => (
   </div>
 );
 
+// --- MODALES GESTIÓN ---
+
 const LoginModal = ({ onLogin, onClose }) => {
   const [pass, setPass] = useState('');
   const [error, setError] = useState(false);
@@ -148,7 +149,7 @@ const LoginModal = ({ onLogin, onClose }) => {
     else { setError(true); setTimeout(() => setError(false), 2000); }
   };
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 text-white">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={onClose}></div>
       <div className={`relative bg-[#111] w-full max-w-md p-10 rounded-3xl border ${error ? 'border-red-600' : 'border-[#d4af37]/30'} shadow-2xl`}>
         <h2 className="text-[#d4af37] text-xl font-black italic uppercase text-center mb-8 tracking-widest">SISTEMA UNIFORMIDAD</h2>
@@ -179,15 +180,15 @@ const AddUniformModal = ({ onSave, onClose }) => {
             <input placeholder="Nombre" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, name: e.target.value})} />
             <input placeholder="URL Portada" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
             <div className="grid grid-cols-2 gap-4">
-              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option></select>
-              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>VOLUNTEER</option></select>
+              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option></select>
+              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>VOLUNTEER</option></select>
             </div>
             <textarea placeholder="Descripción..." className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
             <textarea placeholder="Galería URLs" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
           </div>
           <div className="grid grid-cols-2 gap-8">
             {['male', 'female'].map(g => (
-              <div key={g} className="space-y-2 text-white">
+              <div key={g} className="space-y-2">
                 <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>{g === 'male' ? 'HOMBRE' : 'MUJER'}</p>
                 {UNIFORM_FIELDS.map(f => (
                   <div key={f.key} className="flex flex-col">
@@ -222,7 +223,7 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
             <h2 className="text-red-600 text-2xl font-black italic uppercase tracking-widest">MODIFICAR UNIFORMIDAD</h2>
             <X onClick={onClose} className="cursor-pointer hover:text-red-600 transition" />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-white">
           <div className="space-y-6">
             <input value={formData.name} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, name: e.target.value})} />
             <input value={formData.portada} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
@@ -282,10 +283,13 @@ export default function App() {
   useEffect(() => {
     if (!user) return;
     const uniformsRef = collection(db, 'artifacts', appId, 'public', 'data', 'uniforms');
-    const q = query(uniformsRef, orderBy('sortOrder', 'asc'));
     
-    return onSnapshot(q, (snapshot) => {
-      setUniforms(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    // IMPORTANTE: Hemos quitado el query "orderBy" para que tus datos viejos aparezcan
+    return onSnapshot(uniformsRef, (snapshot) => {
+      let docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      // Ordenamos en el cliente para no ocultar documentos sin el campo sortOrder
+      docs.sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
+      setUniforms(docs);
       setLoading(false);
     });
   }, [user]);
@@ -344,7 +348,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-red-700/50 font-sans tracking-tight">
-      <nav className="fixed w-full z-[60] bg-black/60 backdrop-blur-xl border-b border-white/10 h-20 flex items-center justify-between px-6">
+      <nav className="fixed w-full z-[60] bg-black/60 backdrop-blur-xl border-b border-white/10 h-20 flex items-center justify-between px-6 text-white">
         <div className="flex items-center gap-4 cursor-pointer" onClick={() => {setView('landing'); setSelectedDept(null);}}>
           <img src={LOGO_URL} className="h-12 w-12" alt="SAFD" />
           <div className="text-left hidden sm:block">
@@ -357,15 +361,15 @@ export default function App() {
             <button onClick={() => setShowLoginModal(true)} className="bg-red-700 px-6 py-3 rounded-full text-[10px] font-black uppercase text-white shadow-lg tracking-widest">JEFATURA</button>
           ) : (
             <div className="flex gap-3">
-              <button onClick={() => setShowAddModal(true)} className="bg-green-600 p-3 rounded-full text-white"><Plus size={16}/></button>
-              <button onClick={() => setIsAdmin(false)} className="bg-zinc-800 px-6 py-3 rounded-full text-[10px] font-black text-white">SALIR</button>
+              <button onClick={() => setShowAddModal(true)} className="bg-green-600 p-3 rounded-full text-white shadow-lg shadow-green-900/20"><Plus size={16}/></button>
+              <button onClick={() => setIsAdmin(false)} className="bg-zinc-800 px-6 py-3 rounded-full text-[10px] font-black uppercase text-white">SALIR</button>
             </div>
           )}
         </div>
       </nav>
 
       {view === 'landing' ? (
-        <div className="animate-in fade-in duration-1000 text-white">
+        <div className="animate-in fade-in duration-1000">
           <section className="relative h-screen flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/80 z-10"></div>
             {HERO_IMAGES.map((img, idx) => <img key={idx} src={img} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentHeroIdx ? 'opacity-40' : 'opacity-0'}`} alt="Hero" />)}
@@ -376,8 +380,8 @@ export default function App() {
             </div>
           </section>
 
-          <section className="max-w-7xl mx-auto px-6 py-32 text-white">
-            <h2 className="text-5xl font-black italic uppercase mb-20 text-left">Divisiones <span className="text-red-700">San Andreas Fire Department</span></h2>
+          <section className="max-w-7xl mx-auto px-6 py-32">
+            <h2 className="text-5xl font-black italic uppercase mb-20 text-left text-white">Divisiones <span className="text-red-700">San Andreas Fire Department</span></h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               <DepartmentCard icon={Plane} title="AIR OPS" desc="Extinción aérea y montaña." onClick={() => {setView('department'); setSelectedDept('AIR OPS');}} />
               <DepartmentCard icon={Search} title="FIRE MARSHAL" desc="Investigación y prevención." onClick={() => {setView('department'); setSelectedDept('FIRE MARSHAL');}} />
@@ -390,8 +394,8 @@ export default function App() {
             </div>
           </section>
 
-          <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left text-white">
-            <h2 className="text-5xl font-black italic uppercase mb-10">Uniformidad <span className="text-red-700">General</span></h2>
+          <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left">
+            <h2 className="text-5xl font-black italic uppercase mb-10 text-white">Uniformidad <span className="text-red-700">General</span></h2>
             {isAdmin ? (
               <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === 'General' || !u.dept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                 {uniforms.filter(u => u.dept === 'General' || !u.dept).map(u => (
