@@ -8,8 +8,9 @@ import {
 import { Reorder } from "framer-motion";
 
 // --- CONFIGURACIÓN SUPABASE FINAL (100% CORREGIDA) ---
-const SUPABASE_URL = 'https://houcdpogyqbzvztokzrh.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_OWDHonQuTQOrorGBHA60iw_rUqZZeaJ';
+// --- CONFIGURACIÓN SUPABASE CORREGIDA ---
+const SUPABASE_URL = 'https://houcdpogyqbzvaokzrh.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_OWDHonQuTQOrorGBHA6Oiw_rUqZZeaJ';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
