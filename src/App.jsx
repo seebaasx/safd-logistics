@@ -7,9 +7,9 @@ import {
 } from 'lucide-react';
 import { Reorder } from "framer-motion";
 
-// --- CONFIGURACIÓN SUPABASE ---
-const SUPABASE_URL = 'https://houcdpogyqbzvaokzrh.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_OWDHonQuTQOrorGBHA6Oiw_rUqZZeaj';
+// --- CONFIGURACIÓN SUPABASE (CORREGIDA) ---
+const SUPABASE_URL = 'https://houcdpogyqbzvztokzrh.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_OWDHonQuTQOrorGBHA60iw_rUqZZeaJ';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -162,7 +162,7 @@ const AddUniformModal = ({ onSave, onClose }) => {
       <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-[#d4af37]/40 shadow-2xl max-h-[90vh] overflow-y-auto text-left">
         <h2 className="text-[#d4af37] text-2xl font-black italic uppercase mb-10 pb-6 border-b border-white/5">REGISTRAR NUEVA UNIFORMIDAD</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-white">
-          <div className="space-y-6 text-white">
+          <div className="space-y-6">
             <input placeholder="Nombre" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, name: e.target.value})} />
             <input placeholder="URL Portada" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
             <div className="grid grid-cols-2 gap-4">
@@ -172,13 +172,13 @@ const AddUniformModal = ({ onSave, onClose }) => {
             <textarea placeholder="Descripción..." className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
             <textarea placeholder="Galería URLs (separadas por coma)" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
           </div>
-          <div className="grid grid-cols-2 gap-8 text-white">
+          <div className="grid grid-cols-2 gap-8">
             {['male', 'female'].map(g => (
               <div key={g} className="space-y-2">
                 <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-400' : 'text-pink-400'}`}>{g === 'male' ? 'HOMBRE' : 'MUJER'}</p>
                 {UNIFORM_FIELDS.map(f => (
                   <div key={f.key} className="flex flex-col">
-                    <span className="text-[8px] text-zinc-600 uppercase font-bold text-white">{f.label}</span>
+                    <span className="text-[8px] text-zinc-600 uppercase font-bold">{f.label}</span>
                     <input placeholder="ID" className="w-full bg-black/40 p-2 rounded border border-white/5 text-[10px] text-white outline-none" onChange={e => g === 'male' ? handleMaleChange(f.key, e.target.value) : handleFemaleChange(f.key, e.target.value)} />
                   </div>
                 ))}
@@ -204,12 +204,12 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 text-white text-left">
       <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose}></div>
-      <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-red-600/40 shadow-2xl max-h-[90vh] overflow-y-auto text-white">
+      <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-red-600/40 shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/5">
-            <h2 className="text-red-600 text-2xl font-black italic uppercase tracking-widest text-white">MODIFICAR UNIFORMIDAD</h2>
-            <X onClick={onClose} className="cursor-pointer hover:text-red-600 transition text-white" />
+            <h2 className="text-red-600 text-2xl font-black italic uppercase tracking-widest">MODIFICAR UNIFORMIDAD</h2>
+            <X onClick={onClose} className="cursor-pointer hover:text-red-600 transition" />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-white">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="space-y-6">
             <input value={formData.name} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, name: e.target.value})} />
             <input value={formData.portada} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
@@ -226,7 +226,7 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
                 <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-400' : 'text-pink-400'}`}>{g.toUpperCase()}</p>
                 {UNIFORM_FIELDS.map(f => (
                   <div key={f.key} className="flex flex-col">
-                    <span className="text-[8px] text-zinc-600 uppercase font-bold text-white">{f.label}</span>
+                    <span className="text-[8px] text-zinc-600 uppercase font-bold">{f.label}</span>
                     <input value={formData[g][f.key] || ''} className="bg-black/40 p-2 rounded border border-white/5 text-[10px] text-white outline-none" onChange={e => g === 'male' ? handleMaleChange(f.key, e.target.value) : handleFemaleChange(f.key, e.target.value)} />
                   </div>
                 ))}
@@ -300,6 +300,9 @@ export default function App() {
       setShowAddModal(false);
       fetchUniforms();
       notify("Uniformidad registrada.");
+    } else {
+      console.error(error);
+      notify("Error al guardar.");
     }
   };
 
@@ -352,7 +355,7 @@ export default function App() {
       <nav className="fixed w-full z-[60] bg-black/60 backdrop-blur-xl border-b border-white/10 h-20 flex items-center justify-between px-6">
         <div className="flex items-center gap-4 cursor-pointer" onClick={() => {setView('landing'); setSelectedDept(null);}}>
           <img src={LOGO_URL} className="h-12 w-12" alt="SAFD" />
-          <div className="text-left hidden sm:block text-white">
+          <div className="text-left hidden sm:block">
             <h1 className="text-xl font-black italic uppercase leading-none">SAFD UNIFORMIDAD</h1>
             <p className="text-[9px] text-[#d4af37] font-bold tracking-[0.3em] uppercase">San Andreas Fire & Rescue</p>
           </div>
@@ -370,18 +373,18 @@ export default function App() {
       </nav>
 
       {view === 'landing' ? (
-        <div className="animate-in fade-in duration-1000 text-white">
+        <div className="animate-in fade-in duration-1000">
           <section className="relative h-screen flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/80 z-10"></div>
             {HERO_IMAGES.map((img, idx) => <img key={idx} src={img} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentHeroIdx ? 'opacity-40' : 'opacity-0'}`} alt="Hero" />)}
             <div className="relative z-20 text-center">
               <img src={LOGO_URL} className="h-48 w-48 mx-auto mb-10 drop-shadow-[0_0_50px_rgba(185,28,28,0.5)] animate-pulse" alt="Logo" />
-              <h2 className="text-[#d4af37] text-xs font-black tracking-[1.5em] mb-6 uppercase italic">UNIFORMIDADA • SISTEMA</h2>
+              <h2 className="text-[#d4af37] text-xs font-black tracking-[1.5em] mb-6 uppercase italic">UNIFORMIDAD • SISTEMA</h2>
               <h1 className="text-7xl md:text-[11rem] font-black italic uppercase leading-none tracking-tighter text-white">SAFD <span className="text-red-700">PORTAL</span></h1>
             </div>
           </section>
 
-          <section className="max-w-7xl mx-auto px-6 py-32 text-white">
+          <section className="max-w-7xl mx-auto px-6 py-32">
             <h2 className="text-5xl font-black italic uppercase mb-20 text-left">Divisiones <span className="text-red-700">San Andreas Fire Department</span></h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               <DepartmentCard icon={Plane} title="AIR OPS" desc="Extinción aérea y montaña." onClick={() => {setView('department'); setSelectedDept('AIR OPS');}} />
@@ -396,7 +399,7 @@ export default function App() {
           </section>
 
           <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left text-white">
-            <h2 className="text-5xl font-black italic uppercase mb-10 text-white">Uniformidad <span className="text-red-700">General</span></h2>
+            <h2 className="text-5xl font-black italic uppercase mb-10">Uniformidad <span className="text-red-700">General</span></h2>
             {isAdmin ? (
               <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === 'General' || !u.dept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                 {uniforms.filter(u => u.dept === 'General' || !u.dept).map(u => (
@@ -414,16 +417,16 @@ export default function App() {
         </div>
       ) : (
         <div className="pt-32 pb-32 max-w-7xl mx-auto px-6 text-left min-h-screen text-white">
-          <button onClick={() => {setView('landing'); setSelectedDept(null);}} className="text-zinc-500 hover:text-red-500 mb-12 font-black uppercase text-[10px] flex items-center gap-2 tracking-widest text-white"><ArrowLeft size={16}/> Volver</button>
+          <button onClick={() => {setView('landing'); setSelectedDept(null);}} className="text-zinc-500 hover:text-red-500 mb-12 font-black uppercase text-[10px] flex items-center gap-2 tracking-widest"><ArrowLeft size={16}/> Volver</button>
           <h2 className="text-6xl md:text-8xl font-black italic uppercase mb-20">{selectedDept}</h2>
           {isAdmin ? (
-            <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === selectedDept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 text-white">
+            <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === selectedDept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
               {uniforms.filter(u => u.dept === selectedDept).map(u => (
                 <Reorder.Item key={u.id} value={u}><UniformCard uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} onEdit={setEditingUniform} /></Reorder.Item>
               ))}
             </Reorder.Group>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 text-white">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
               {uniforms.filter(u => u.dept === selectedDept).map(u => (
                 <UniformCard key={u.id} uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} onEdit={setEditingUniform} />
               ))}
@@ -438,14 +441,14 @@ export default function App() {
       {editingUniform && <EditUniformModal uniform={editingUniform} onSave={updateUniform} onClose={() => setEditingUniform(null)} />}
       
       {notification && (
-        <div className="fixed bottom-10 right-10 z-[300] p-6 rounded-3xl bg-zinc-900 border border-[#d4af37]/30 shadow-2xl flex items-center gap-4 animate-in slide-in-from-right duration-500 text-white">
+        <div className="fixed bottom-10 right-10 z-[300] p-6 rounded-3xl bg-zinc-900 border border-[#d4af37]/30 shadow-2xl flex items-center gap-4 animate-in slide-in-from-right duration-500">
           <AlertCircle size={20} className="text-[#d4af37]" />
-          <span className="font-bold uppercase text-[10px] tracking-widest text-white">{notification}</span>
+          <span className="font-bold uppercase text-[10px] tracking-widest">{notification}</span>
         </div>
       )}
 
       <footer className="py-40 border-t border-white/5 text-center opacity-30 text-white">
-        <p className="text-zinc-700 text-[10px] uppercase font-black tracking-[1em] mb-4 text-white">SAFD UNIFORMIDAD • STATE OF SAN ANDREAS</p>
+        <p className="text-zinc-700 text-[10px] uppercase font-black tracking-[1em] mb-4">SAFD UNIFORMIDAD • STATE OF SAN ANDREAS</p>
       </footer>
     </div>
   );
