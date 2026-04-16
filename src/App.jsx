@@ -3,7 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { 
   getFirestore, collection, doc, onSnapshot, 
-  addDoc, setDoc, deleteDoc, query, writeBatch 
+  addDoc, setDoc, deleteDoc, query, orderBy, writeBatch 
 } from 'firebase/firestore';
 import { 
   Shield, Plane, Search, Anchor, Flame, Stethoscope, Radio, Biohazard, 
@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Reorder } from "framer-motion";
 
-// --- CONFIGURACIÓN (Tus llaves de la captura image_ca6449.png) ---
+// --- CONFIGURACIÓN ---
 const firebaseConfig = {
   apiKey: "AIzaSyBjvokaJaOjwLkZ1BAbFYtn6T1VUF0Iz1A",
   authDomain: "safd-uniformidad.firebaseapp.com",
@@ -71,19 +71,19 @@ const UniformCarousel = ({ images }) => {
 const UniformCard = ({ uniform, isAdmin, onDelete, onSelect, onEdit }) => (
   <div onClick={() => onSelect(uniform)} className="group relative bg-zinc-900 rounded-[2.5rem] overflow-hidden border border-white/5 cursor-pointer hover:border-red-600/50 transition-all duration-500 shadow-xl h-full">
     <div className="aspect-square overflow-hidden">
-      <img src={uniform.portada || (uniform.imageUrls ? uniform.imageUrls[0] : '')} className="w-full h-full object-cover group-hover:scale-105 transition duration-1000 opacity-80 group-hover:opacity-100" alt={uniform.name} />
+      <img src={uniform.portada || (uniform.imageUrls?.[0]) || "https://via.placeholder.com/400?text=SAFD"} className="w-full h-full object-cover group-hover:scale-105 transition duration-1000 opacity-80 group-hover:opacity-100" alt={uniform.name} />
     </div>
     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent text-left p-8 flex flex-col justify-end">
       <span className="text-[10px] font-black uppercase text-[#d4af37] tracking-[0.3em]">{uniform.category}</span>
       <div className="flex justify-between items-end">
-        <h4 className="text-2xl font-black italic uppercase leading-none mt-1 text-white">{uniform.name}</h4>
+        <h4 className="text-2xl font-black italic uppercase leading-none mt-1 text-white break-words">{uniform.name}</h4>
         <div className="bg-white/10 backdrop-blur-md p-3 rounded-full group-hover:bg-red-600 group-hover:scale-110 transition duration-300 text-white"><ChevronRight size={18} /></div>
       </div>
     </div>
     {isAdmin && (
       <div className="absolute top-6 right-6 flex gap-2 z-10">
-        <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(uniform); }} className="bg-blue-600/90 p-2.5 rounded-xl hover:bg-blue-500 transition-all hover:scale-110 text-white shadow-lg"><Edit2 size={18} /></button>
-        <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(uniform.id); }} className="bg-red-900/90 p-2.5 rounded-xl hover:bg-red-600 transition-all hover:scale-110 text-white shadow-lg"><Trash2 size={18} /></button>
+        <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(uniform); }} className="bg-blue-600/90 p-2.5 rounded-xl hover:bg-blue-500 transition-all text-white shadow-lg"><Edit2 size={18} /></button>
+        <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(uniform.id); }} className="bg-red-900/90 p-2.5 rounded-xl hover:bg-red-600 transition-all text-white shadow-lg"><Trash2 size={18} /></button>
       </div>
     )}
   </div>
@@ -101,7 +101,7 @@ const DepartmentCard = ({ icon: Icon, title, desc, onClick, color = "bg-red-600"
 );
 
 const UniformDetail = ({ uniform, onClose }) => (
-  <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 text-left">
+  <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 text-left overflow-hidden">
     <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl" onClick={onClose}></div>
     <div className="relative bg-[#0a0a0a] w-full max-w-6xl rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[90vh] animate-in zoom-in-95 duration-300">
       <div className="w-full lg:w-1/2 relative bg-zinc-950 min-h-[40vh] lg:min-h-0">
@@ -110,24 +110,24 @@ const UniformDetail = ({ uniform, onClose }) => (
       </div>
       <div className="w-full lg:w-1/2 p-8 lg:p-14 overflow-y-auto text-white">
         <div className="mb-12">
-          <span className="bg-red-600 text-[10px] font-black px-5 py-2 rounded-full uppercase tracking-widest italic">{uniform.category}</span>
-          <h2 className="text-3xl sm:text-4xl lg:text-6xl font-black italic uppercase leading-none tracking-tighter text-white whitespace-nowrap origin-left scale-x-95 sm:scale-x-100">
-  {uniform.name}
-</h2>
+          <span className="bg-red-600 text-[10px] font-black px-5 py-2 rounded-full uppercase tracking-widest italic inline-block mb-6">{uniform.category}</span>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black italic uppercase leading-tight tracking-tighter break-words whitespace-nowrap origin-left scale-x-95 sm:scale-x-100">
+            {uniform.name}
+          </h2>
           <p className="mt-6 text-zinc-500 font-medium text-base leading-relaxed">{uniform.description}</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {['Hombre', 'Mujer'].map(gender => (
-            <div key={gender} className="bg-white/[0.03] p-8 rounded-[2.5rem] border border-white/5">
-              <h3 className={`font-black italic uppercase tracking-widest mb-6 pb-4 border-b border-white/10 ${gender === 'Hombre' ? 'text-blue-400' : 'text-pink-400'}`}>{gender.toUpperCase()}</h3>
-              <div className="space-y-3">
+            <div key={gender} className="bg-white/[0.03] p-10 rounded-[2.5rem] border border-white/5">
+              <h3 className={`text-xl font-black italic uppercase tracking-widest mb-8 pb-4 border-b border-white/10 ${gender === 'Hombre' ? 'text-blue-400' : 'text-pink-400'}`}>{gender.toUpperCase()}</h3>
+              <div className="space-y-5">
                 {UNIFORM_FIELDS.map(f => {
                   const val = gender === 'Hombre' ? uniform.maleIds?.[f.key] : uniform.femaleIds?.[f.key];
                   if (!val || val === '' || val === '0') return null;
                   return (
                     <div key={f.key} className="flex justify-between items-center group/item">
-                      <span className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">{f.label}</span>
-                      <span className="text-xs font-mono font-bold text-white bg-white/5 px-3 py-1 rounded-lg border border-white/10 group-hover/item:border-red-600/50 transition">{val}</span>
+                      <span className="text-[11px] text-zinc-400 uppercase font-black tracking-widest">{f.label}</span>
+                      <span className="text-sm font-mono font-bold text-white bg-white/5 px-4 py-2 rounded-xl border border-white/10 group-hover/item:border-red-600/50 transition">{val}</span>
                     </div>
                   );
                 })}
@@ -140,123 +140,7 @@ const UniformDetail = ({ uniform, onClose }) => (
   </div>
 );
 
-// --- MODALES GESTIÓN ---
-
-const LoginModal = ({ onLogin, onClose }) => {
-  const [pass, setPass] = useState('');
-  const [error, setError] = useState(false);
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (pass === "SAFD2026") { onLogin(); onClose(); }
-    else { setError(true); setTimeout(() => setError(false), 2000); }
-  };
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={onClose}></div>
-      <div className={`relative bg-[#111] w-full max-w-md p-10 rounded-3xl border ${error ? 'border-red-600' : 'border-[#d4af37]/30'} shadow-2xl`}>
-        <h2 className="text-[#d4af37] text-xl font-black italic uppercase text-center mb-8 tracking-widest">SISTEMA UNIFORMIDAD</h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <input type="password" autoFocus className="w-full bg-[#1c1c1c] p-5 rounded-xl border border-white/5 focus:border-[#d4af37] outline-none text-white text-center text-2xl tracking-[0.4em]" value={pass} onChange={e => setPass(e.target.value)} />
-          <button type="submit" className="w-full bg-[#b91c1c] py-5 rounded-xl font-black uppercase text-white hover:bg-red-600 transition">AUTORIZAR ACCESO</button>
-        </form>
-      </div>
-    </div>
-  );
-};
-
-const AddUniformModal = ({ onSave, onClose }) => {
-  const [formData, setFormData] = useState({
-    name: '', category: 'Reglamentario', dept: 'General', description: '', imageUrls: '', portada: '',
-    male: { helmet: '', jacket: '', shirt: '', bag: '', arms: '', legs: '', shoes: '', decal: '', chain: '', vest: '', mask: '', glasses: '' },
-    female: { helmet: '', jacket: '', shirt: '', bag: '', arms: '', legs: '', shoes: '', decal: '', chain: '', vest: '', mask: '', glasses: '' }
-  });
-  const handleMaleChange = (f, v) => setFormData(p => ({...p, male: {...p.male, [f]: v}}));
-  const handleFemaleChange = (f, v) => setFormData(p => ({...p, female: {...p.female, [f]: v}}));
-  return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 text-white">
-      <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose}></div>
-      <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-[#d4af37]/40 shadow-2xl max-h-[90vh] overflow-y-auto text-left">
-        <h2 className="text-[#d4af37] text-2xl font-black italic uppercase mb-10 pb-6 border-b border-white/5">REGISTRAR NUEVA UNIFORMIDAD</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <div className="space-y-6">
-            <input placeholder="Nombre" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, name: e.target.value})} />
-            <input placeholder="URL Portada" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
-            <div className="grid grid-cols-2 gap-4">
-              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option></select>
-              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>TTU</option></select>
-            </div>
-            <textarea placeholder="Descripción..." className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
-            <textarea placeholder="Galería URLs" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
-          </div>
-          <div className="grid grid-cols-2 gap-8">
-            {['male', 'female'].map(g => (
-              <div key={g} className="space-y-2">
-                <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>{g === 'male' ? 'HOMBRE' : 'MUJER'}</p>
-                {UNIFORM_FIELDS.map(f => (
-                  <div key={f.key} className="flex flex-col">
-                    <span className="text-[8px] text-zinc-600 uppercase font-bold">{f.label}</span>
-                    <input placeholder="ID" className="w-full bg-black/40 p-2 rounded border border-white/5 text-[10px] text-white outline-none" onChange={e => g === 'male' ? handleMaleChange(f.key, e.target.value) : handleFemaleChange(f.key, e.target.value)} />
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-        <button onClick={() => onSave(formData)} className="w-full bg-red-700 py-5 rounded-2xl font-black uppercase text-white hover:bg-red-600 transition mt-10 shadow-xl">ARCHIVAR EN UNIFORMIDAD</button>
-      </div>
-    </div>
-  );
-};
-
-const EditUniformModal = ({ uniform, onSave, onClose }) => {
-  const [formData, setFormData] = useState({
-    id: uniform.id, name: uniform.name, category: uniform.category, dept: uniform.dept || 'General', description: uniform.description || '', portada: uniform.portada || '',
-    imageUrls: Array.isArray(uniform.imageUrls) ? uniform.imageUrls.join(', ') : '',
-    male: uniform.maleIds || {}, female: uniform.femaleIds || {}
-  });
-  const handleMaleChange = (f, v) => setFormData(p => ({...p, male: {...p.male, [f]: v}}));
-  const handleFemaleChange = (f, v) => setFormData(p => ({...p, female: {...p.female, [f]: v}}));
-
-  return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 text-white text-left">
-      <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose}></div>
-      <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-red-600/40 shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/5">
-            <h2 className="text-red-600 text-2xl font-black italic uppercase tracking-widest">MODIFICAR UNIFORMIDAD</h2>
-            <X onClick={onClose} className="cursor-pointer hover:text-red-600 transition" />
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-white">
-          <div className="space-y-6">
-            <input value={formData.name} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, name: e.target.value})} />
-            <input value={formData.portada} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
-            <div className="grid grid-cols-2 gap-4">
-              <select value={formData.category} className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option><option>Actualizado</option></select>
-              <select value={formData.dept} className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>TTU</option></select>
-            </div>
-            <textarea value={formData.description} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
-            <textarea value={formData.imageUrls} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
-          </div>
-          <div className="grid grid-cols-2 gap-8">
-            {['male', 'female'].map(g => (
-              <div key={g} className="space-y-2">
-                <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>{g.toUpperCase()}</p>
-                {UNIFORM_FIELDS.map(f => (
-                  <div key={f.key} className="flex flex-col">
-                    <span className="text-[8px] text-zinc-600 uppercase font-bold">{f.label}</span>
-                    <input value={formData[g][f.key] || ''} className="bg-black/40 p-2 rounded border border-white/5 text-[10px] text-white outline-none" onChange={e => g === 'male' ? handleMaleChange(f.key, e.target.value) : handleFemaleChange(f.key, e.target.value)} />
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-        <button onClick={() => onSave(formData)} className="w-full bg-red-700 py-5 rounded-2xl font-black uppercase text-white hover:bg-red-600 transition mt-10 shadow-xl">GUARDAR CAMBIOS EN UNIFORMIDAD</button>
-      </div>
-    </div>
-  );
-};
-
-// --- APP PRINCIPAL ---
+// --- APP ---
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -285,16 +169,62 @@ export default function App() {
   useEffect(() => {
     if (!user) return;
     const uniformsRef = collection(db, 'artifacts', appId, 'public', 'data', 'uniforms');
-    
-    // IMPORTANTE: Hemos quitado el query "orderBy" para que tus datos viejos aparezcan
     return onSnapshot(uniformsRef, (snapshot) => {
       let docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      // Ordenamos en el cliente para no ocultar documentos sin el campo sortOrder
       docs.sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
       setUniforms(docs);
       setLoading(false);
     });
   }, [user]);
+
+  const notify = (msg) => {
+    setNotification(msg);
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  // FUNCIÓN DE GUARDADO PROTEGIDA
+  const saveUniform = async (formData) => {
+    const { male, female, imageUrls, portada, ...rest } = formData;
+    const urls = typeof imageUrls === 'string' ? imageUrls.split(',').map(s => s.trim()).filter(s => s) : [];
+    const finalPortada = (portada && portada.trim() !== "") ? portada : (urls[0] || "https://via.placeholder.com/400?text=SAFD");
+
+    try {
+      await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'uniforms'), {
+        ...rest, 
+        portada: finalPortada, 
+        maleIds: male || {}, 
+        femaleIds: female || {}, 
+        imageUrls: urls,
+        sortOrder: uniforms.length 
+      });
+      setShowAddModal(false);
+      notify("Uniformidad registrada.");
+    } catch (e) {
+      console.error(e);
+      notify("Error al guardar en base de datos.");
+    }
+  };
+
+  const updateUniform = async (formData) => {
+    const { id, male, female, imageUrls, portada, ...rest } = formData;
+    const urls = typeof imageUrls === 'string' ? imageUrls.split(',').map(s => s.trim()).filter(s => s) : (imageUrls || []);
+    const finalPortada = (portada && portada.trim() !== "") ? portada : (urls[0] || "https://via.placeholder.com/400?text=SAFD");
+
+    try {
+      await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'uniforms', id), {
+        ...rest, 
+        portada: finalPortada, 
+        maleIds: male || {}, 
+        femaleIds: female || {}, 
+        imageUrls: urls
+      }, { merge: true });
+      setEditingUniform(null);
+      notify("Uniformidad actualizada.");
+    } catch (e) {
+      console.error(e);
+      notify("Error al actualizar.");
+    }
+  };
 
   const handleReorder = async (newOrder) => {
     setUniforms(newOrder);
@@ -308,38 +238,8 @@ export default function App() {
       await batch.commit();
       notify("Orden sincronizado.");
     } catch (e) {
-      notify("Error al sincronizar.");
+      notify("Error al sincronizar orden.");
     }
-  };
-
-  const notify = (msg) => {
-    setNotification(msg);
-    setTimeout(() => setNotification(null), 3000);
-  };
-
-  const saveUniform = async (formData) => {
-    const { male, female, imageUrls, portada, ...rest } = formData;
-    const urls = imageUrls.split(',').map(s => s.trim()).filter(s => s);
-    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'uniforms'), {
-      ...rest, 
-      portada: portada || urls[0], 
-      maleIds: male, 
-      femaleIds: female, 
-      imageUrls: urls,
-      sortOrder: uniforms.length 
-    });
-    setShowAddModal(false);
-    notify("Uniformidad registrada.");
-  };
-
-  const updateUniform = async (formData) => {
-    const { id, male, female, imageUrls, portada, ...rest } = formData;
-    const urls = typeof imageUrls === 'string' ? imageUrls.split(',').map(s => s.trim()).filter(s => s) : imageUrls;
-    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'uniforms', id), {
-      ...rest, portada, maleIds: male, femaleIds: female, imageUrls: urls
-    }, { merge: true });
-    setEditingUniform(null);
-    notify("Uniformidad actualizada.");
   };
 
   const deleteUniform = async (id) => {
@@ -350,7 +250,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-red-700/50 font-sans tracking-tight">
-      <nav className="fixed w-full z-[60] bg-black/60 backdrop-blur-xl border-b border-white/10 h-20 flex items-center justify-between px-6 text-white">
+      <nav className="fixed w-full z-[60] bg-black/60 backdrop-blur-xl border-b border-white/10 h-20 flex items-center justify-between px-6">
         <div className="flex items-center gap-4 cursor-pointer" onClick={() => {setView('landing'); setSelectedDept(null);}}>
           <img src={LOGO_URL} className="h-12 w-12" alt="SAFD" />
           <div className="text-left hidden sm:block">
@@ -363,7 +263,7 @@ export default function App() {
             <button onClick={() => setShowLoginModal(true)} className="bg-red-700 px-6 py-3 rounded-full text-[10px] font-black uppercase text-white shadow-lg tracking-widest">JEFATURA</button>
           ) : (
             <div className="flex gap-3">
-              <button onClick={() => setShowAddModal(true)} className="bg-green-600 p-3 rounded-full text-white shadow-lg shadow-green-900/20"><Plus size={16}/></button>
+              <button onClick={() => setShowAddModal(true)} className="bg-green-600 p-3 rounded-full text-white shadow-lg"><Plus size={16}/></button>
               <button onClick={() => setIsAdmin(false)} className="bg-zinc-800 px-6 py-3 rounded-full text-[10px] font-black uppercase text-white">SALIR</button>
             </div>
           )}
@@ -383,7 +283,7 @@ export default function App() {
           </section>
 
           <section className="max-w-7xl mx-auto px-6 py-32">
-            <h2 className="text-5xl font-black italic uppercase mb-20 text-left text-white">Divisiones <span className="text-red-700">San Andreas Fire Department</span></h2>
+            <h2 className="text-5xl font-black italic uppercase mb-20 text-left">Divisiones <span className="text-red-700">San Andreas Fire Department</span></h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               <DepartmentCard icon={Plane} title="AIR OPS" desc="Extinción aérea y montaña." onClick={() => {setView('department'); setSelectedDept('AIR OPS');}} />
               <DepartmentCard icon={Search} title="FIRE MARSHAL" desc="Investigación y prevención." onClick={() => {setView('department'); setSelectedDept('FIRE MARSHAL');}} />
@@ -392,12 +292,12 @@ export default function App() {
               <DepartmentCard icon={Flame} title="WILDLAND" desc="Incendios forestales." onClick={() => {setView('department'); setSelectedDept('WILDLAND');}} />
               <DepartmentCard icon={Stethoscope} title="PARAMEDIC" desc="Urgencias críticas." onClick={() => {setView('department'); setSelectedDept('PARAMEDIC');}} />
               <DepartmentCard icon={Biohazard} title="HAZMAT" color="bg-yellow-600" desc="Materiales químicos." onClick={() => {setView('department'); setSelectedDept('HAZMAT');}} />
-              <DepartmentCard icon={Users} title="TTU" color="bg-blue-800" desc="Tactial Trauma Unit." onClick={() => {setView('department'); setSelectedDept('TTU');}} />
+              <DepartmentCard icon={Users} title="VOLUNTEER" color="bg-blue-800" desc="Personal en prácticas." onClick={() => {setView('department'); setSelectedDept('VOLUNTEER');}} />
             </div>
           </section>
 
-          <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left">
-            <h2 className="text-5xl font-black italic uppercase mb-10 text-white">Uniformidad <span className="text-red-700">General</span></h2>
+          <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left text-white">
+            <h2 className="text-5xl font-black italic uppercase mb-10">Uniformidad <span className="text-red-700">General</span></h2>
             {isAdmin ? (
               <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === 'General' || !u.dept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                 {uniforms.filter(u => u.dept === 'General' || !u.dept).map(u => (
@@ -433,6 +333,7 @@ export default function App() {
         </div>
       )}
 
+      {/* MODALES Y NOTIFICACIÓN */}
       {selectedUniform && <UniformDetail uniform={selectedUniform} onClose={() => setSelectedUniform(null)} />}
       {showAddModal && <AddUniformModal onSave={saveUniform} onClose={() => setShowAddModal(false)} />}
       {showLoginModal && <LoginModal onLogin={() => setIsAdmin(true)} onClose={() => setShowLoginModal(false)} />}
@@ -451,3 +352,5 @@ export default function App() {
     </div>
   );
 }
+
+// (Siguen los componentes de los Modales...)
