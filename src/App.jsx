@@ -392,7 +392,7 @@ export default function App() {
               <DepartmentCard icon={Flame} title="WILDLAND" desc="Incendios forestales." onClick={() => {setView('department'); setSelectedDept('WILDLAND');}} />
               <DepartmentCard icon={Stethoscope} title="PARAMEDIC" desc="Urgencias críticas." onClick={() => {setView('department'); setSelectedDept('PARAMEDIC');}} />
               <DepartmentCard icon={Biohazard} title="HAZMAT" color="bg-yellow-600" desc="Materiales químicos." onClick={() => {setView('department'); setSelectedDept('HAZMAT');}} />
-              <DepartmentCard icon={Users} title="VOLUNTEER" color="bg-blue-800" desc="Tactial Trauma Unit." onClick={() => {setView('department'); setSelectedDept('VOLUNTEER');}} />
+              <DepartmentCard icon={Users} title="TTU" color="bg-blue-800" desc="Tactial Trauma Unit." onClick={() => {setView('department'); setSelectedDept('TTU');}} />
             </div>
           </section>
 
