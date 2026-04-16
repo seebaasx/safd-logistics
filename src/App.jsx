@@ -376,7 +376,7 @@ export default function App() {
             {HERO_IMAGES.map((img, idx) => <img key={idx} src={img} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentHeroIdx ? 'opacity-40' : 'opacity-0'}`} alt="Hero" />)}
             <div className="relative z-20 text-center">
               <img src={LOGO_URL} className="h-48 w-48 mx-auto mb-10 drop-shadow-[0_0_50px_rgba(185,28,28,0.5)] animate-pulse" alt="Logo" />
-              <h2 className="text-[#d4af37] text-xs font-black tracking-[1.5em] mb-6 uppercase italic">UNIFORMIDAD • SISTEMA</h2>
+              <h2 className="text-[#d4af37] text-xs font-black tracking-[1.5em] mb-6 uppercase italic">UNIFORMIDADA • SISTEMA</h2>
               <h1 className="text-7xl md:text-[11rem] font-black italic uppercase leading-none tracking-tighter text-white">SAFD <span className="text-red-700">PORTAL</span></h1>
             </div>
           </section>
