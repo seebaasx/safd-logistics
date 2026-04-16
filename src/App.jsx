@@ -111,7 +111,7 @@ const UniformDetail = ({ uniform, onClose }) => (
       <div className="w-full lg:w-1/2 p-8 lg:p-14 overflow-y-auto text-white">
         <div className="mb-12">
           <span className="bg-red-600 text-[10px] font-black px-5 py-2 rounded-full uppercase tracking-widest italic">{uniform.category}</span>
-          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black italic uppercase leading-tight mt-6 break-words text-white">
+          <h2 className="text-3xl sm:text-4xl lg:text-6xl font-black italic uppercase leading-none tracking-tighter text-white whitespace-nowrap origin-left scale-x-95 sm:scale-x-100">
   {uniform.name}
 </h2>
           <p className="mt-6 text-zinc-500 font-medium text-base leading-relaxed">{uniform.description}</p>
