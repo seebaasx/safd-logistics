@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { Reorder } from "framer-motion";
 
-// --- CONFIGURACIÓN SUPABASE (CORREGIDA) ---
+// --- CONFIGURACIÓN SUPABASE FINAL (100% CORREGIDA) ---
 const SUPABASE_URL = 'https://houcdpogyqbzvztokzrh.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_OWDHonQuTQOrorGBHA60iw_rUqZZeaJ';
 
@@ -35,7 +35,7 @@ const UNIFORM_FIELDS = [
   { key: 'glasses', label: 'Gafas' }
 ];
 
-// --- COMPONENTES AUXILIARES ---
+// --- COMPONENTES UI ---
 
 const UniformCarousel = ({ images }) => {
   const [idx, setIdx] = useState(0);
@@ -136,7 +136,7 @@ const LoginModal = ({ onLogin, onClose }) => {
     else { setError(true); setTimeout(() => setError(false), 2000); }
   };
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 text-white">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={onClose}></div>
       <div className={`relative bg-[#111] w-full max-w-md p-10 rounded-3xl border ${error ? 'border-red-600' : 'border-[#d4af37]/30'} shadow-2xl`}>
         <h2 className="text-[#d4af37] text-xl font-black italic uppercase text-center mb-8 tracking-widest">SISTEMA UNIFORMIDAD</h2>
@@ -174,7 +174,7 @@ const AddUniformModal = ({ onSave, onClose }) => {
           </div>
           <div className="grid grid-cols-2 gap-8">
             {['male', 'female'].map(g => (
-              <div key={g} className="space-y-2 text-white">
+              <div key={g} className="space-y-2">
                 <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-400' : 'text-pink-400'}`}>{g === 'male' ? 'HOMBRE' : 'MUJER'}</p>
                 {UNIFORM_FIELDS.map(f => (
                   <div key={f.key} className="flex flex-col">
@@ -205,11 +205,11 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 text-white text-left">
       <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose}></div>
       <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-red-600/40 shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/5 text-white">
+        <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/5">
             <h2 className="text-red-600 text-2xl font-black italic uppercase tracking-widest">MODIFICAR UNIFORMIDAD</h2>
             <X onClick={onClose} className="cursor-pointer hover:text-red-600 transition" />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-white">
           <div className="space-y-6">
             <input value={formData.name} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, name: e.target.value})} />
             <input value={formData.portada} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
@@ -222,7 +222,7 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
           </div>
           <div className="grid grid-cols-2 gap-8">
             {['male', 'female'].map(g => (
-              <div key={g} className="space-y-2 text-white">
+              <div key={g} className="space-y-2">
                 <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-400' : 'text-pink-400'}`}>{g.toUpperCase()}</p>
                 {UNIFORM_FIELDS.map(f => (
                   <div key={f.key} className="flex flex-col">
@@ -266,7 +266,7 @@ export default function App() {
       .select('*')
       .order('sortOrder', { ascending: true });
     
-    if (error) console.error(error);
+    if (error) console.error("Error cargando:", error);
     else setUniforms(data || []);
     setLoading(false);
   };
@@ -301,7 +301,7 @@ export default function App() {
       fetchUniforms();
       notify("Uniformidad registrada.");
     } else {
-      console.error(error);
+      console.error("Error al guardar:", error);
       notify("Error al guardar.");
     }
   };
@@ -384,7 +384,7 @@ export default function App() {
             </div>
           </section>
 
-          <section className="max-w-7xl mx-auto px-6 py-32">
+          <section className="max-w-7xl mx-auto px-6 py-32 text-white">
             <h2 className="text-5xl font-black italic uppercase mb-20 text-left">Divisiones <span className="text-red-700">San Andreas Fire Department</span></h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               <DepartmentCard icon={Plane} title="AIR OPS" desc="Extinción aérea y montaña." onClick={() => {setView('department'); setSelectedDept('AIR OPS');}} />
@@ -398,7 +398,7 @@ export default function App() {
             </div>
           </section>
 
-          <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left text-white">
+          <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left">
             <h2 className="text-5xl font-black italic uppercase mb-10">Uniformidad <span className="text-red-700">General</span></h2>
             {isAdmin ? (
               <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === 'General' || !u.dept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -407,7 +407,7 @@ export default function App() {
                 ))}
               </Reorder.Group>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 text-white">
                 {uniforms.filter(u => u.dept === 'General' || !u.dept).map(u => (
                   <UniformCard key={u.id} uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} onEdit={setEditingUniform} />
                 ))}
@@ -420,7 +420,7 @@ export default function App() {
           <button onClick={() => {setView('landing'); setSelectedDept(null);}} className="text-zinc-500 hover:text-red-500 mb-12 font-black uppercase text-[10px] flex items-center gap-2 tracking-widest"><ArrowLeft size={16}/> Volver</button>
           <h2 className="text-6xl md:text-8xl font-black italic uppercase mb-20">{selectedDept}</h2>
           {isAdmin ? (
-            <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === selectedDept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === selectedDept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 text-white">
               {uniforms.filter(u => u.dept === selectedDept).map(u => (
                 <Reorder.Item key={u.id} value={u}><UniformCard uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} onEdit={setEditingUniform} /></Reorder.Item>
               ))}
