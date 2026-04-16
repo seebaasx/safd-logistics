@@ -7,12 +7,10 @@ import {
 } from 'lucide-react';
 import { Reorder } from "framer-motion";
 
-// --- CONFIGURACIÓN SUPABASE (AHORA SÍ, PERFECTA) ---
-// El ID correcto lleva 'vztokzrh', lo he verificado en tu captura de Settings
+// --- CONFIGURACIÓN SUPABASE ---
 const SUPABASE_URL = 'https://houcdpogyqbzvztokzrh.supabase.co';
-
-// La clave lleva un 0 (cero) y termina en J (mayúscula)
-const SUPABASE_ANON_KEY = 'sb_publishable_OWDHonQuTQOrorGBHA60iw_rUqZZeaJ';
+// PEGA AQUÍ LA CLAVE LARGA (LEGACY ANON) QUE HAS COPIADO
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdWNkcG9neXFienZ6dG9renJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNTgzNjUsImV4cCI6MjA5MTkzNDM2NX0.Xa9wZTToYnK44xbpgBUwwZj994VD-AeAJxXgRXINFII'; 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -24,18 +22,12 @@ const HERO_IMAGES = [
 ];
 
 const UNIFORM_FIELDS = [
-  { key: 'mask', label: 'Máscaras' },
-  { key: 'chain', label: 'Cadenas' },
-  { key: 'jacket', label: 'Chaquetas' },
-  { key: 'shirt', label: 'Camisetas' },
-  { key: 'vest', label: 'Chalecos' },
-  { key: 'bag', label: 'Bolsas' },
-  { key: 'arms', label: 'Brazos' },
-  { key: 'legs', label: 'Piernas' },
-  { key: 'shoes', label: 'Zapatos' },
-  { key: 'decal', label: 'Calcomanías' },
-  { key: 'helmet', label: 'Cascos' },
-  { key: 'glasses', label: 'Gafas' }
+  { key: 'mask', label: 'Máscaras' }, { key: 'chain', label: 'Cadenas' },
+  { key: 'jacket', label: 'Chaquetas' }, { key: 'shirt', label: 'Camisetas' },
+  { key: 'vest', label: 'Chalecos' }, { key: 'bag', label: 'Bolsas' },
+  { key: 'arms', label: 'Brazos' }, { key: 'legs', label: 'Piernas' },
+  { key: 'shoes', label: 'Zapatos' }, { key: 'decal', label: 'Calcomanías' },
+  { key: 'helmet', label: 'Cascos' }, { key: 'glasses', label: 'Gafas' }
 ];
 
 // --- COMPONENTES UI ---
@@ -63,15 +55,15 @@ const UniformCard = ({ uniform, isAdmin, onDelete, onSelect, onEdit }) => (
     </div>
     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent text-left p-8 flex flex-col justify-end">
       <span className="text-[10px] font-black uppercase text-[#d4af37] tracking-[0.3em]">{uniform.category}</span>
-      <div className="flex justify-between items-end">
+      <div className="flex justify-between items-end text-white">
         <h4 className="text-2xl font-black italic uppercase leading-none mt-1 text-white break-words">{uniform.name}</h4>
-        <div className="bg-white/10 backdrop-blur-md p-3 rounded-full group-hover:bg-red-600 group-hover:scale-110 transition duration-300 text-white"><ChevronRight size={18} /></div>
+        <div className="bg-white/10 backdrop-blur-md p-3 rounded-full group-hover:bg-red-600 group-hover:scale-110 transition duration-300"><ChevronRight size={18} /></div>
       </div>
     </div>
     {isAdmin && (
-      <div className="absolute top-6 right-6 flex gap-2 z-10">
-        <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(uniform); }} className="bg-blue-600/90 p-2.5 rounded-xl hover:bg-blue-500 transition-all text-white shadow-lg"><Edit2 size={18} /></button>
-        <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(uniform.id); }} className="bg-red-900/90 p-2.5 rounded-xl hover:bg-red-600 transition-all text-white shadow-lg"><Trash2 size={18} /></button>
+      <div className="absolute top-6 right-6 flex gap-2 z-10 text-white">
+        <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(uniform); }} className="bg-blue-600/90 p-2.5 rounded-xl hover:bg-blue-500 transition-all shadow-lg"><Edit2 size={18} /></button>
+        <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(uniform.id); }} className="bg-red-900/90 p-2.5 rounded-xl hover:bg-red-600 transition-all shadow-lg"><Trash2 size={18} /></button>
       </div>
     )}
   </div>
@@ -128,7 +120,7 @@ const UniformDetail = ({ uniform, onClose }) => (
   </div>
 );
 
-// --- MODALES GESTIÓN ---
+// --- MODALES ---
 
 const LoginModal = ({ onLogin, onClose }) => {
   const [pass, setPass] = useState('');
@@ -175,12 +167,12 @@ const AddUniformModal = ({ onSave, onClose }) => {
             <textarea placeholder="Descripción..." className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
             <textarea placeholder="Galería URLs (separadas por coma)" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
           </div>
-          <div className="grid grid-cols-2 gap-8 text-white">
+          <div className="grid grid-cols-2 gap-8">
             {['male', 'female'].map(g => (
               <div key={g} className="space-y-2">
                 <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-400' : 'text-pink-400'}`}>{g === 'male' ? 'HOMBRE' : 'MUJER'}</p>
                 {UNIFORM_FIELDS.map(f => (
-                  <div key={f.key} className="flex flex-col">
+                  <div key={f.key} className="flex flex-col text-white">
                     <span className="text-[8px] text-zinc-600 uppercase font-bold">{f.label}</span>
                     <input placeholder="ID" className="w-full bg-black/40 p-2 rounded border border-white/5 text-[10px] text-white outline-none" onChange={e => g === 'male' ? handleMaleChange(f.key, e.target.value) : handleFemaleChange(f.key, e.target.value)} />
                   </div>
@@ -208,8 +200,8 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 text-white text-left">
       <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose}></div>
       <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-red-600/40 shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/5">
-            <h2 className="text-red-600 text-2xl font-black italic uppercase tracking-widest text-white">MODIFICAR UNIFORMIDAD</h2>
+        <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/5 text-white">
+            <h2 className="text-red-600 text-2xl font-black italic uppercase tracking-widest">MODIFICAR UNIFORMIDAD</h2>
             <X onClick={onClose} className="cursor-pointer hover:text-red-600 transition" />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-white">
@@ -223,7 +215,7 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
             <textarea value={formData.description} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
             <textarea value={formData.imageUrls} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
           </div>
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-2 gap-8 text-white">
             {['male', 'female'].map(g => (
               <div key={g} className="space-y-2">
                 <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-400' : 'text-pink-400'}`}>{g.toUpperCase()}</p>
@@ -335,11 +327,9 @@ export default function App() {
   const handleReorder = async (newOrder) => {
     setUniforms(newOrder);
     if (!isAdmin) return;
-
     const updates = newOrder.map((item, index) => 
       supabase.from('uniforms').update({ sortOrder: index }).eq('id', item.id)
     );
-
     await Promise.all(updates);
     notify("Orden sincronizado.");
   };
@@ -347,18 +337,15 @@ export default function App() {
   const deleteUniform = async (id) => {
     if(!window.confirm("¿Borrar uniforme?")) return;
     const { error } = await supabase.from('uniforms').delete().eq('id', id);
-    if (!error) {
-      fetchUniforms();
-      notify("Uniforme eliminado.");
-    }
+    if (!error) { fetchUniforms(); notify("Uniforme eliminado."); }
   };
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-red-700/50 font-sans tracking-tight">
-      <nav className="fixed w-full z-[60] bg-black/60 backdrop-blur-xl border-b border-white/10 h-20 flex items-center justify-between px-6">
+      <nav className="fixed w-full z-[60] bg-black/60 backdrop-blur-xl border-b border-white/10 h-20 flex items-center justify-between px-6 text-white">
         <div className="flex items-center gap-4 cursor-pointer" onClick={() => {setView('landing'); setSelectedDept(null);}}>
           <img src={LOGO_URL} className="h-12 w-12" alt="SAFD" />
-          <div className="text-left hidden sm:block text-white">
+          <div className="text-left hidden sm:block">
             <h1 className="text-xl font-black italic uppercase leading-none">SAFD UNIFORMIDAD</h1>
             <p className="text-[9px] text-[#d4af37] font-bold tracking-[0.3em] uppercase">San Andreas Fire & Rescue</p>
           </div>
@@ -380,7 +367,7 @@ export default function App() {
           <section className="relative h-screen flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/80 z-10"></div>
             {HERO_IMAGES.map((img, idx) => <img key={idx} src={img} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentHeroIdx ? 'opacity-40' : 'opacity-0'}`} alt="Hero" />)}
-            <div className="relative z-20 text-center text-white">
+            <div className="relative z-20 text-center">
               <img src={LOGO_URL} className="h-48 w-48 mx-auto mb-10 drop-shadow-[0_0_50px_rgba(185,28,28,0.5)] animate-pulse" alt="Logo" />
               <h2 className="text-[#d4af37] text-xs font-black tracking-[1.5em] mb-6 uppercase italic">UNIFORMIDAD • SISTEMA</h2>
               <h1 className="text-7xl md:text-[11rem] font-black italic uppercase leading-none tracking-tighter text-white">SAFD <span className="text-red-700">PORTAL</span></h1>
@@ -402,7 +389,7 @@ export default function App() {
           </section>
 
           <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left text-white">
-            <h2 className="text-5xl font-black italic uppercase mb-10 text-white">Uniformidad <span className="text-red-700">General</span></h2>
+            <h2 className="text-5xl font-black italic uppercase mb-10">Uniformidad <span className="text-red-700">General</span></h2>
             {isAdmin ? (
               <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === 'General' || !u.dept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                 {uniforms.filter(u => u.dept === 'General' || !u.dept).map(u => (
@@ -410,7 +397,7 @@ export default function App() {
                 ))}
               </Reorder.Group>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 text-white">
                 {uniforms.filter(u => u.dept === 'General' || !u.dept).map(u => (
                   <UniformCard key={u.id} uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} onEdit={setEditingUniform} />
                 ))}
@@ -429,7 +416,7 @@ export default function App() {
               ))}
             </Reorder.Group>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 text-white">
               {uniforms.filter(u => u.dept === selectedDept).map(u => (
                 <UniformCard key={u.id} uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} onEdit={setEditingUniform} />
               ))}
@@ -446,7 +433,7 @@ export default function App() {
       {notification && (
         <div className="fixed bottom-10 right-10 z-[300] p-6 rounded-3xl bg-zinc-900 border border-[#d4af37]/30 shadow-2xl flex items-center gap-4 animate-in slide-in-from-right duration-500 text-white">
           <AlertCircle size={20} className="text-[#d4af37]" />
-          <span className="font-bold uppercase text-[10px] tracking-widest text-white">{notification}</span>
+          <span className="font-bold uppercase text-[10px] tracking-widest">{notification}</span>
         </div>
       )}
 
