@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-import { 
-  getFirestore, collection, doc, onSnapshot, 
-  addDoc, setDoc, deleteDoc, query, orderBy, writeBatch 
-} from 'firebase/firestore';
+import { createClient } from '@supabase/supabase-js';
 import { 
   Shield, Plane, Search, Anchor, Flame, Stethoscope, Radio, Biohazard, 
   Plus, Trash2, Edit2, X, ChevronRight, ChevronLeft, User, Users, Lock, Unlock, 
@@ -12,21 +7,11 @@ import {
 } from 'lucide-react';
 import { Reorder } from "framer-motion";
 
-// --- CONFIGURACIÓN ---
-const firebaseConfig = {
-  apiKey: "AIzaSyBjvokaJaOjwLkZ1BAbFYtn6T1VUF0Iz1A",
-  authDomain: "safd-uniformidad.firebaseapp.com",
-  projectId: "safd-uniformidad",
-  storageBucket: "safd-uniformidad.firebasestorage.app",
-  messagingSenderId: "429691809293",
-  appId: "1:429691809293:web:0a02fe8fe5ea2b854c2f44",
-  measurementId: "G-6EY004XWGN"
-};
+// --- CONFIGURACIÓN SUPABASE ---
+const SUPABASE_URL = 'https://houcdpogyqbzvaokzrh.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_OWDHonQuTQOrorGBHA6Oiw_rUqZZeaj';
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const appId = 'safd-logistics-v3';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const LOGO_URL = "https://r2.fivemanage.com/rlMpa4HCjCLM3vQVrxiNo/imagen_2026-04-13_191540450.png";
 const HERO_IMAGES = [
@@ -83,7 +68,7 @@ const UniformCard = ({ uniform, isAdmin, onDelete, onSelect, onEdit }) => (
     {isAdmin && (
       <div className="absolute top-6 right-6 flex gap-2 z-10">
         <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(uniform); }} className="bg-blue-600/90 p-2.5 rounded-xl hover:bg-blue-500 transition-all text-white shadow-lg"><Edit2 size={18} /></button>
-        <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(uniform.id); }} className="bg-red-900/90 p-2.5 rounded-xl hover:bg-red-600 transition-all hover:scale-110 text-white shadow-lg"><Trash2 size={18} /></button>
+        <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(uniform.id); }} className="bg-red-900/90 p-2.5 rounded-xl hover:bg-red-600 transition-all text-white shadow-lg"><Trash2 size={18} /></button>
       </div>
     )}
   </div>
@@ -105,7 +90,7 @@ const UniformDetail = ({ uniform, onClose }) => (
     <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl" onClick={onClose}></div>
     <div className="relative bg-[#0a0a0a] w-full max-w-6xl rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[90vh] animate-in zoom-in-95 duration-300">
       <div className="w-full lg:w-1/2 relative bg-zinc-950 min-h-[40vh] lg:min-h-0">
-        <UniformCarousel images={uniform.imageUrls || [uniform.imageUrl]} />
+        <UniformCarousel images={uniform.imageUrls || []} />
         <button onClick={onClose} className="absolute top-8 left-8 bg-black/60 p-4 rounded-full hover:bg-red-600 transition-all z-30 text-white"><X/></button>
       </div>
       <div className="w-full lg:w-1/2 p-8 lg:p-14 overflow-y-auto text-white">
@@ -140,7 +125,7 @@ const UniformDetail = ({ uniform, onClose }) => (
   </div>
 );
 
-// --- COMPONENTES DE MODALES (LOS QUE FALTABAN) ---
+// --- MODALES GESTIÓN ---
 
 const LoginModal = ({ onLogin, onClose }) => {
   const [pass, setPass] = useState('');
@@ -167,8 +152,7 @@ const LoginModal = ({ onLogin, onClose }) => {
 const AddUniformModal = ({ onSave, onClose }) => {
   const [formData, setFormData] = useState({
     name: '', category: 'Reglamentario', dept: 'General', description: '', imageUrls: '', portada: '',
-    male: { mask: '', chain: '', jacket: '', shirt: '', vest: '', bag: '', arms: '', legs: '', shoes: '', decal: '', helmet: '', glasses: '' },
-    female: { mask: '', chain: '', jacket: '', shirt: '', vest: '', bag: '', arms: '', legs: '', shoes: '', decal: '', helmet: '', glasses: '' }
+    male: {}, female: {}
   });
   const handleMaleChange = (f, v) => setFormData(p => ({...p, male: {...p.male, [f]: v}}));
   const handleFemaleChange = (f, v) => setFormData(p => ({...p, female: {...p.female, [f]: v}}));
@@ -178,7 +162,7 @@ const AddUniformModal = ({ onSave, onClose }) => {
       <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-[#d4af37]/40 shadow-2xl max-h-[90vh] overflow-y-auto text-left">
         <h2 className="text-[#d4af37] text-2xl font-black italic uppercase mb-10 pb-6 border-b border-white/5">REGISTRAR NUEVA UNIFORMIDAD</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-white">
-          <div className="space-y-6">
+          <div className="space-y-6 text-white">
             <input placeholder="Nombre" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, name: e.target.value})} />
             <input placeholder="URL Portada" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
             <div className="grid grid-cols-2 gap-4">
@@ -186,15 +170,15 @@ const AddUniformModal = ({ onSave, onClose }) => {
               <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>VOLUNTEER</option></select>
             </div>
             <textarea placeholder="Descripción..." className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
-            <textarea placeholder="Galería URLs" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
+            <textarea placeholder="Galería URLs (separadas por coma)" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
           </div>
           <div className="grid grid-cols-2 gap-8 text-white">
             {['male', 'female'].map(g => (
               <div key={g} className="space-y-2">
-                <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>{g === 'male' ? 'HOMBRE' : 'MUJER'}</p>
+                <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-400' : 'text-pink-400'}`}>{g === 'male' ? 'HOMBRE' : 'MUJER'}</p>
                 {UNIFORM_FIELDS.map(f => (
                   <div key={f.key} className="flex flex-col">
-                    <span className="text-[8px] text-zinc-600 uppercase font-bold">{f.label}</span>
+                    <span className="text-[8px] text-zinc-600 uppercase font-bold text-white">{f.label}</span>
                     <input placeholder="ID" className="w-full bg-black/40 p-2 rounded border border-white/5 text-[10px] text-white outline-none" onChange={e => g === 'male' ? handleMaleChange(f.key, e.target.value) : handleFemaleChange(f.key, e.target.value)} />
                   </div>
                 ))}
@@ -220,29 +204,29 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 text-white text-left">
       <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose}></div>
-      <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-red-600/40 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-red-600/40 shadow-2xl max-h-[90vh] overflow-y-auto text-white">
         <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/5">
-            <h2 className="text-red-600 text-2xl font-black italic uppercase tracking-widest">MODIFICAR UNIFORMIDAD</h2>
-            <X onClick={onClose} className="cursor-pointer hover:text-red-600 transition" />
+            <h2 className="text-red-600 text-2xl font-black italic uppercase tracking-widest text-white">MODIFICAR UNIFORMIDAD</h2>
+            <X onClick={onClose} className="cursor-pointer hover:text-red-600 transition text-white" />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-white">
           <div className="space-y-6">
             <input value={formData.name} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, name: e.target.value})} />
             <input value={formData.portada} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
             <div className="grid grid-cols-2 gap-4">
-              <select value={formData.category} className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option><option>Actualizado</option></select>
-              <select value={formData.dept} className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>VOLUNTEER</option></select>
+              <select value={formData.category} className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option><option>Actualizado</option></select>
+              <select value={formData.dept} className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>VOLUNTEER</option></select>
             </div>
             <textarea value={formData.description} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
             <textarea value={formData.imageUrls} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
           </div>
-          <div className="grid grid-cols-2 gap-8 text-white">
+          <div className="grid grid-cols-2 gap-8">
             {['male', 'female'].map(g => (
               <div key={g} className="space-y-2">
-                <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>{g.toUpperCase()}</p>
+                <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-400' : 'text-pink-400'}`}>{g.toUpperCase()}</p>
                 {UNIFORM_FIELDS.map(f => (
                   <div key={f.key} className="flex flex-col">
-                    <span className="text-[8px] text-zinc-600 uppercase font-bold">{f.label}</span>
+                    <span className="text-[8px] text-zinc-600 uppercase font-bold text-white">{f.label}</span>
                     <input value={formData[g][f.key] || ''} className="bg-black/40 p-2 rounded border border-white/5 text-[10px] text-white outline-none" onChange={e => g === 'male' ? handleMaleChange(f.key, e.target.value) : handleFemaleChange(f.key, e.target.value)} />
                   </div>
                 ))}
@@ -259,7 +243,6 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
 // --- APP PRINCIPAL ---
 
 export default function App() {
-  const [user, setUser] = useState(null);
   const [view, setView] = useState('landing'); 
   const [selectedDept, setSelectedDept] = useState(null);
   const [uniforms, setUniforms] = useState([]);
@@ -277,21 +260,20 @@ export default function App() {
     return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    onAuthStateChanged(auth, setUser);
-    signInAnonymously(auth);
-  }, []);
+  const fetchUniforms = async () => {
+    const { data, error } = await supabase
+      .from('uniforms')
+      .select('*')
+      .order('sortOrder', { ascending: true });
+    
+    if (error) console.error(error);
+    else setUniforms(data || []);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    if (!user) return;
-    const uniformsRef = collection(db, 'artifacts', appId, 'public', 'data', 'uniforms');
-    return onSnapshot(uniformsRef, (snapshot) => {
-      let docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      docs.sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
-      setUniforms(docs);
-      setLoading(false);
-    });
-  }, [user]);
+    fetchUniforms();
+  }, []);
 
   const notify = (msg) => {
     setNotification(msg);
@@ -303,20 +285,21 @@ export default function App() {
     const urls = typeof imageUrls === 'string' ? imageUrls.split(',').map(s => s.trim()).filter(s => s) : [];
     const finalPortada = (portada && portada.trim() !== "") ? portada : (urls[0] || "https://via.placeholder.com/400?text=SAFD");
 
-    try {
-      await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'uniforms'), {
-        ...rest, 
-        portada: finalPortada, 
-        maleIds: male || {}, 
-        femaleIds: female || {}, 
+    const { error } = await supabase
+      .from('uniforms')
+      .insert([{
+        ...rest,
+        portada: finalPortada,
+        maleIds: male || {},
+        femaleIds: female || {},
         imageUrls: urls,
-        sortOrder: uniforms.length 
-      });
+        sortOrder: uniforms.length
+      }]);
+
+    if (!error) {
       setShowAddModal(false);
+      fetchUniforms();
       notify("Uniformidad registrada.");
-    } catch (e) {
-      console.error(e);
-      notify("Error al guardar.");
     }
   };
 
@@ -325,42 +308,43 @@ export default function App() {
     const urls = typeof imageUrls === 'string' ? imageUrls.split(',').map(s => s.trim()).filter(s => s) : (imageUrls || []);
     const finalPortada = (portada && portada.trim() !== "") ? portada : (urls[0] || "https://via.placeholder.com/400?text=SAFD");
 
-    try {
-      await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'uniforms', id), {
-        ...rest, 
-        portada: finalPortada, 
-        maleIds: male || {}, 
-        femaleIds: female || {}, 
+    const { error } = await supabase
+      .from('uniforms')
+      .update({
+        ...rest,
+        portada: finalPortada,
+        maleIds: male || {},
+        femaleIds: female || {},
         imageUrls: urls
-      }, { merge: true });
+      })
+      .eq('id', id);
+
+    if (!error) {
       setEditingUniform(null);
+      fetchUniforms();
       notify("Uniformidad actualizada.");
-    } catch (e) {
-      console.error(e);
-      notify("Error al actualizar.");
     }
   };
 
   const handleReorder = async (newOrder) => {
     setUniforms(newOrder);
     if (!isAdmin) return;
-    const batch = writeBatch(db);
-    newOrder.forEach((item, index) => {
-      const ref = doc(db, 'artifacts', appId, 'public', 'data', 'uniforms', item.id);
-      batch.update(ref, { sortOrder: index });
-    });
-    try {
-      await batch.commit();
-      notify("Orden sincronizado.");
-    } catch (e) {
-      notify("Error al sincronizar.");
-    }
+
+    const updates = newOrder.map((item, index) => 
+      supabase.from('uniforms').update({ sortOrder: index }).eq('id', item.id)
+    );
+
+    await Promise.all(updates);
+    notify("Orden sincronizado.");
   };
 
   const deleteUniform = async (id) => {
     if(!window.confirm("¿Borrar uniforme?")) return;
-    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'uniforms', id));
-    notify("Uniforme eliminado.");
+    const { error } = await supabase.from('uniforms').delete().eq('id', id);
+    if (!error) {
+      fetchUniforms();
+      notify("Uniforme eliminado.");
+    }
   };
 
   return (
@@ -386,7 +370,7 @@ export default function App() {
       </nav>
 
       {view === 'landing' ? (
-        <div className="animate-in fade-in duration-1000">
+        <div className="animate-in fade-in duration-1000 text-white">
           <section className="relative h-screen flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/80 z-10"></div>
             {HERO_IMAGES.map((img, idx) => <img key={idx} src={img} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentHeroIdx ? 'opacity-40' : 'opacity-0'}`} alt="Hero" />)}
@@ -412,7 +396,7 @@ export default function App() {
           </section>
 
           <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left text-white">
-            <h2 className="text-5xl font-black italic uppercase mb-10">Uniformidad <span className="text-red-700">General</span></h2>
+            <h2 className="text-5xl font-black italic uppercase mb-10 text-white">Uniformidad <span className="text-red-700">General</span></h2>
             {isAdmin ? (
               <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === 'General' || !u.dept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                 {uniforms.filter(u => u.dept === 'General' || !u.dept).map(u => (
@@ -430,7 +414,7 @@ export default function App() {
         </div>
       ) : (
         <div className="pt-32 pb-32 max-w-7xl mx-auto px-6 text-left min-h-screen text-white">
-          <button onClick={() => {setView('landing'); setSelectedDept(null);}} className="text-zinc-500 hover:text-red-500 mb-12 font-black uppercase text-[10px] flex items-center gap-2 tracking-widest"><ArrowLeft size={16}/> Volver</button>
+          <button onClick={() => {setView('landing'); setSelectedDept(null);}} className="text-zinc-500 hover:text-red-500 mb-12 font-black uppercase text-[10px] flex items-center gap-2 tracking-widest text-white"><ArrowLeft size={16}/> Volver</button>
           <h2 className="text-6xl md:text-8xl font-black italic uppercase mb-20">{selectedDept}</h2>
           {isAdmin ? (
             <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === selectedDept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 text-white">
@@ -439,7 +423,7 @@ export default function App() {
               ))}
             </Reorder.Group>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 text-white">
               {uniforms.filter(u => u.dept === selectedDept).map(u => (
                 <UniformCard key={u.id} uniform={u} isAdmin={isAdmin} onDelete={deleteUniform} onSelect={setSelectedUniform} onEdit={setEditingUniform} />
               ))}
@@ -456,12 +440,12 @@ export default function App() {
       {notification && (
         <div className="fixed bottom-10 right-10 z-[300] p-6 rounded-3xl bg-zinc-900 border border-[#d4af37]/30 shadow-2xl flex items-center gap-4 animate-in slide-in-from-right duration-500 text-white">
           <AlertCircle size={20} className="text-[#d4af37]" />
-          <span className="font-bold uppercase text-[10px] tracking-widest">{notification}</span>
+          <span className="font-bold uppercase text-[10px] tracking-widest text-white">{notification}</span>
         </div>
       )}
 
       <footer className="py-40 border-t border-white/5 text-center opacity-30 text-white">
-        <p className="text-zinc-700 text-[10px] uppercase font-black tracking-[1em] mb-4">SAFD UNIFORMIDAD • STATE OF SAN ANDREAS</p>
+        <p className="text-zinc-700 text-[10px] uppercase font-black tracking-[1em] mb-4 text-white">SAFD UNIFORMIDAD • STATE OF SAN ANDREAS</p>
       </footer>
     </div>
   );
