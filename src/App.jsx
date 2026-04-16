@@ -7,12 +7,12 @@ import {
 } from 'firebase/firestore';
 import { 
   Shield, Plane, Search, Anchor, Flame, Stethoscope, Radio, Biohazard, 
-  Plus, Trash2, Edit2, X, ChevronRight, ChevronLeft, Lock, Unlock, 
+  Plus, Trash2, Edit2, X, ChevronRight, ChevronLeft, User, Users, Lock, Unlock, 
   AlertCircle, ArrowLeft 
 } from 'lucide-react';
 import { Reorder } from "framer-motion";
 
-// --- CONFIGURACIÓN ---
+// --- CONFIGURACIÓN (Copiada directamente de tu captura image_ca6449.png) ---
 const firebaseConfig = {
   apiKey: "AIzaSyBjvokaJaOjwLkZ1BAbFYtn6T1VUF0Iz1A",
   authDomain: "safd-uniformidad.firebaseapp.com",
@@ -101,9 +101,9 @@ const DepartmentCard = ({ icon: Icon, title, desc, onClick, color = "bg-red-600"
 );
 
 const UniformDetail = ({ uniform, onClose }) => (
-  <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 text-left">
-    <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl" onClick={onClose}></div>
-    <div className="relative bg-[#0a0a0a] w-full max-w-6xl rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[90vh] animate-in zoom-in-95 duration-300">
+  <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 text-left">
+    <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl animate-in fade-in duration-500" onClick={onClose}></div>
+    <div className="relative bg-[#0a0a0a] w-full max-w-6xl rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row h-full lg:h-auto max-h-[90vh] animate-in zoom-in-95 duration-300">
       <div className="w-full lg:w-1/2 relative bg-zinc-950 min-h-[40vh] lg:min-h-0">
         <UniformCarousel images={uniform.imageUrls || [uniform.imageUrl]} />
         <button onClick={onClose} className="absolute top-8 left-8 bg-black/60 p-4 rounded-full hover:bg-red-600 transition-all z-30"><X/></button>
@@ -116,7 +116,7 @@ const UniformDetail = ({ uniform, onClose }) => (
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {['Hombre', 'Mujer'].map(gender => (
-            <div key={gender} className="bg-white/[0.03] p-8 rounded-[2.5rem] border border-white/5">
+            <div key={gender} className="bg-white/[0.03] backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/5">
               <h3 className={`font-black italic uppercase tracking-widest mb-6 pb-4 border-b border-white/10 ${gender === 'Hombre' ? 'text-blue-400' : 'text-pink-400'}`}>{gender.toUpperCase()}</h3>
               <div className="space-y-3">
                 {UNIFORM_FIELDS.map(f => {
@@ -147,13 +147,13 @@ const LoginModal = ({ onLogin, onClose }) => {
     else { setError(true); setTimeout(() => setError(false), 2000); }
   };
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 text-white">
       <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={onClose}></div>
       <div className={`relative bg-[#111] w-full max-w-md p-10 rounded-3xl border ${error ? 'border-red-600' : 'border-[#d4af37]/30'} shadow-2xl`}>
         <h2 className="text-[#d4af37] text-xl font-black italic uppercase text-center mb-8 tracking-widest">SISTEMA UNIFORMIDAD</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <input type="password" autoFocus className="w-full bg-[#1c1c1c] p-5 rounded-xl border border-white/5 focus:border-[#d4af37] outline-none text-white text-center text-2xl tracking-[0.4em]" value={pass} onChange={e => setPass(e.target.value)} />
-          <button type="submit" className="w-full bg-[#b91c1c] py-5 rounded-xl font-black uppercase text-white hover:bg-red-600 transition shadow-xl">AUTORIZAR ACCESO</button>
+          <button type="submit" className="w-full bg-[#b91c1c] py-5 rounded-xl font-black uppercase text-white hover:bg-red-600 transition">AUTORIZAR ACCESO</button>
         </form>
       </div>
     </div>
@@ -173,20 +173,20 @@ const AddUniformModal = ({ onSave, onClose }) => {
       <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose}></div>
       <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-[#d4af37]/40 shadow-2xl max-h-[90vh] overflow-y-auto text-left">
         <h2 className="text-[#d4af37] text-2xl font-black italic uppercase mb-10 pb-6 border-b border-white/5">REGISTRAR NUEVA UNIFORMIDAD</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-white">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="space-y-6">
             <input placeholder="Nombre" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, name: e.target.value})} />
             <input placeholder="URL Portada" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
             <div className="grid grid-cols-2 gap-4">
-              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option></select>
-              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>VOLUNTEER</option></select>
+              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option></select>
+              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>VOLUNTEER</option></select>
             </div>
-            <textarea placeholder="Descripción" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
+            <textarea placeholder="Descripción..." className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
             <textarea placeholder="Galería URLs" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
           </div>
           <div className="grid grid-cols-2 gap-8">
             {['male', 'female'].map(g => (
-              <div key={g} className="space-y-2">
+              <div key={g} className="space-y-2 text-white">
                 <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>{g === 'male' ? 'HOMBRE' : 'MUJER'}</p>
                 {UNIFORM_FIELDS.map(f => (
                   <div key={f.key} className="flex flex-col">
@@ -364,8 +364,8 @@ export default function App() {
       </nav>
 
       {view === 'landing' ? (
-        <div className="animate-in fade-in duration-1000">
-          <section className="relative h-screen flex items-center justify-center overflow-hidden text-white">
+        <div className="animate-in fade-in duration-1000 text-white">
+          <section className="relative h-screen flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/80 z-10"></div>
             {HERO_IMAGES.map((img, idx) => <img key={idx} src={img} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentHeroIdx ? 'opacity-40' : 'opacity-0'}`} alt="Hero" />)}
             <div className="relative z-20 text-center">
