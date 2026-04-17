@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { 
   Shield, Plane, Search, Anchor, Flame, Stethoscope, Radio, Biohazard, 
   Plus, Trash2, Edit2, X, ChevronRight, ChevronLeft, User, Users, Lock, Unlock, 
-  AlertCircle, ArrowLeft 
+  AlertCircle, ArrowLeft, Star, Helicopter, HardHat, TreePine 
 } from 'lucide-react';
 import { Reorder } from "framer-motion";
 
@@ -375,18 +375,83 @@ export default function App() {
           </section>
 
           <section className="max-w-7xl mx-auto px-6 py-32 text-white">
-            <h2 className="text-5xl font-black italic uppercase mb-20 text-left">Divisiones <span className="text-red-700">San Andreas Fire Department</span></h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              <DepartmentCard icon={Plane} title="AIR OPS" desc="Extinción aérea y montaña." onClick={() => {setView('department'); setSelectedDept('AIR OPS');}} />
-              <DepartmentCard icon={Search} title="FIRE MARSHAL" desc="Investigación y prevención." onClick={() => {setView('department'); setSelectedDept('FIRE MARSHAL');}} />
-              <DepartmentCard icon={Radio} title="R.T.D." desc="Entrenamiento y formación." onClick={() => {setView('department'); setSelectedDept('R.T.D.');}} />
-              <DepartmentCard icon={Anchor} title="MARINE" desc="Salvamento marítimo." onClick={() => {setView('department'); setSelectedDept('MARINE');}} />
-              <DepartmentCard icon={Flame} title="WILDLAND" desc="Incendios forestales." onClick={() => {setView('department'); setSelectedDept('WILDLAND');}} />
-              <DepartmentCard icon={Stethoscope} title="PARAMEDIC" desc="Urgencias críticas." onClick={() => {setView('department'); setSelectedDept('PARAMEDIC');}} />
-              <DepartmentCard icon={Biohazard} title="HAZMAT" color="bg-yellow-600" desc="Materiales químicos." onClick={() => {setView('department'); setSelectedDept('HAZMAT');}} />
-              <DepartmentCard icon={Users} title="VOLUNTEER" color="bg-blue-800" desc="Personal en prácticas." onClick={() => {setView('department'); setSelectedDept('VOLUNTEER');}} />
-            </div>
-          </section>
+  <h2 className="text-5xl font-black italic uppercase mb-20 text-left">Divisiones <span className="text-red-700">SAFD</span></h2>
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    
+    {/* 1. R.T.D. - Estrella y Morado */}
+    <DepartmentCard 
+      icon={Star} 
+      title="R.T.D." 
+      color="bg-purple-600"
+      desc="Entrenamiento y formación." 
+      onClick={() => {setView('department'); setSelectedDept('R.T.D.');}} 
+    />
+
+    {/* 2. AIR OPS - Helicóptero y Aguamarina */}
+    <DepartmentCard 
+      icon={Helicopter} 
+      title="AIR OPS" 
+      color="bg-cyan-400"
+      desc="Extinción aérea y montaña." 
+      onClick={() => {setView('department'); setSelectedDept('AIR OPS');}} 
+    />
+
+    {/* 3. VOLUNTEER - Casco médico y Negro */}
+    <DepartmentCard 
+      icon={HardHat} 
+      title="VOLUNTEER" 
+      color="bg-zinc-900"
+      desc="Personal en prácticas." 
+      onClick={() => {setView('department'); setSelectedDept('VOLUNTEER');}} 
+    />
+
+    {/* 4. FIRE MARSHAL - Lupa y Amarillo */}
+    <DepartmentCard 
+      icon={Search} 
+      title="FIRE MARSHAL" 
+      color="bg-yellow-500"
+      desc="Investigación y prevención." 
+      onClick={() => {setView('department'); setSelectedDept('FIRE MARSHAL');}} 
+    />
+
+    {/* 5. MARINE - Ancla y Azul Marino */}
+    <DepartmentCard 
+      icon={Anchor} 
+      title="MARINE" 
+      color="bg-blue-900"
+      desc="Salvamento marítimo." 
+      onClick={() => {setView('department'); setSelectedDept('MARINE');}} 
+    />
+
+    {/* 6. WILDLAND - Árbol y Rojo */}
+    <DepartmentCard 
+      icon={TreePine} 
+      title="WILDLAND" 
+      color="bg-red-600"
+      desc="Incendios forestales." 
+      onClick={() => {setView('department'); setSelectedDept('WILDLAND');}} 
+    />
+
+    {/* 7. PARAMEDIC - Estetoscopio y Verde Lima */}
+    <DepartmentCard 
+      icon={Stethoscope} 
+      title="PARAMEDIC" 
+      color="bg-lime-500"
+      desc="Urgencias críticas." 
+      onClick={() => {setView('department'); setSelectedDept('PARAMEDIC');}} 
+    />
+
+    {/* 8. HAZMAT - Tóxico y Naranja */}
+    <DepartmentCard 
+      icon={Biohazard} 
+      title="HAZMAT" 
+      color="bg-orange-500"
+      desc="Materiales químicos." 
+      onClick={() => {setView('department'); setSelectedDept('HAZMAT');}} 
+    />
+
+  </div>
+</section>
 
           <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left text-white">
             <h2 className="text-5xl font-black italic uppercase mb-10">Uniformidad <span className="text-red-700">General</span></h2>
