@@ -162,7 +162,7 @@ const AddUniformModal = ({ onSave, onClose }) => {
             <input placeholder="URL Portada" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
             <div className="grid grid-cols-2 gap-4">
               <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option></select>
-              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>VOLUNTEER</option></select>
+              <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>TTU</option></select>
             </div>
             <textarea placeholder="Descripción..." className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
             <textarea placeholder="Galería URLs (separadas por coma)" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
@@ -210,7 +210,7 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
             <input value={formData.portada} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
             <div className="grid grid-cols-2 gap-4">
               <select value={formData.category} className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option><option>Actualizado</option></select>
-              <select value={formData.dept} className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>VOLUNTEER</option></select>
+              <select value={formData.dept} className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>TTU</option></select>
             </div>
             <textarea value={formData.description} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
             <textarea value={formData.imageUrls} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
@@ -396,13 +396,13 @@ export default function App() {
       onClick={() => {setView('department'); setSelectedDept('AIR OPS');}} 
     />
 
-    {/* 3. VOLUNTEER - Casco médico y Negro */}
+    {/* 3. TTU - Casco médico y Negro */}
     <DepartmentCard 
       icon={HardHat} 
-      title="VOLUNTEER" 
+      title="TTU" 
       color="bg-zinc-900"
       desc="Personal en prácticas." 
-      onClick={() => {setView('department'); setSelectedDept('VOLUNTEER');}} 
+      onClick={() => {setView('department'); setSelectedDept('TTU');}} 
     />
 
     {/* 4. FIRE MARSHAL - Lupa y Amarillo */}
