@@ -401,7 +401,7 @@ export default function App() {
       icon={HardHat} 
       title="TTU" 
       color="bg-zinc-900"
-      desc="Personal en prácticas." 
+      desc="Tecnical Trauma Unit" 
       onClick={() => {setView('department'); setSelectedDept('TTU');}} 
     />
 
