@@ -375,14 +375,14 @@ export default function App() {
           </section>
 
           <section className="max-w-7xl mx-auto px-6 py-32 text-white">
-  <h2 className="text-5xl font-black italic uppercase mb-20 text-left">Divisiones <span className="text-red-700">SAFD</span></h2>
+  <h2 className="text-5xl font-black italic uppercase mb-20 text-left">Divisiones / Departamentos <span className="text-red-700">SAFD</span></h2>
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
     
     {/* 1. R.T.D. - Estrella y Morado */}
     <DepartmentCard 
       icon={Star} 
       title="R.T.D." 
-      color="bg-purple-600"
+      color="bg-[#7c3aed]"
       desc="Entrenamiento y formación." 
       onClick={() => {setView('department'); setSelectedDept('R.T.D.');}} 
     />
