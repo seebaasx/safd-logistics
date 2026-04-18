@@ -382,7 +382,7 @@ export default function App() {
     <DepartmentCard 
       icon={Star} 
       title="R.T.D." 
-      color="bg-[#7c3aed]"
+      color="#2596be"
       desc="Entrenamiento y formación." 
       onClick={() => {setView('department'); setSelectedDept('R.T.D.');}} 
     />
