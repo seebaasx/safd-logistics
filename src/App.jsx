@@ -83,44 +83,51 @@ const DepartmentCard = ({ icon: Icon, title, desc, onClick, color = "bg-red-600"
 const UniformDetail = ({ uniform, onClose }) => (
   <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 text-left overflow-hidden">
     <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl" onClick={onClose}></div>
-    <div className="relative bg-[#0a0a0a] w-full max-w-6xl rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[90vh] animate-in zoom-in-95 duration-300">
+    
+    {/* CAMBIO: He aumentado a max-w-7xl (aprox 1280px) para que sea mucho más ancha */}
+    <div className="relative bg-[#0a0a0a] w-full max-w-7xl rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[95vh] animate-in zoom-in-95 duration-300">
       
-      {/* Parte Izquierda: Imagen */}
-      <div className="w-full lg:w-1/2 relative bg-zinc-950 min-h-[40vh] lg:min-h-0">
+      {/* Parte Izquierda: Imagen (la mantenemos fija para que no crezca demasiado) */}
+      <div className="w-full lg:w-[45%] relative bg-zinc-950 min-h-[40vh] lg:min-h-0 shrink-0">
         <UniformCarousel images={uniform.imageUrls || []} />
         <button onClick={onClose} className="absolute top-8 left-8 bg-black/60 p-4 rounded-full hover:bg-red-600 transition-all z-30 text-white"><X/></button>
       </div>
 
-      {/* Parte Derecha: Información */}
-      <div className="w-full lg:w-1/2 p-6 lg:p-12 overflow-y-auto text-white">
-        <div className="mb-10 text-white">
-          <span className="bg-red-600 text-[10px] font-black px-5 py-2 rounded-full uppercase tracking-widest italic inline-block mb-6">{uniform.category}</span>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black italic uppercase leading-tight tracking-tighter mb-4 text-white">
+      {/* Parte Derecha: Ahora con mucho más espacio horizontal */}
+      <div className="w-full lg:w-[55%] p-8 lg:p-14 overflow-y-auto text-white">
+        <div className="mb-12">
+          <span className="bg-red-600 text-[10px] font-black px-5 py-2 rounded-full uppercase tracking-widest italic inline-block mb-6">
+            {uniform.category}
+          </span>
+          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black italic uppercase leading-none tracking-tighter mb-4 text-white">
             {uniform.name}
           </h2>
-          <p className="text-zinc-500 font-medium text-sm leading-relaxed max-w-md">{uniform.description}</p>
+          <p className="text-zinc-500 font-medium text-base leading-relaxed max-w-2xl">
+            {uniform.description}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {/* La cuadrícula ahora respira mejor gracias al ancho extra */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
           {['Hombre', 'Mujer'].map(gender => (
-            <div key={gender} className="bg-white/[0.03] p-6 lg:p-8 rounded-[2.5rem] border border-white/5">
-              <h3 className={`text-lg font-black italic uppercase tracking-widest mb-6 pb-4 border-b border-white/10 ${gender === 'Hombre' ? 'text-blue-400' : 'text-pink-400'}`}>
+            <div key={gender} className="bg-white/[0.02] p-8 rounded-[2.5rem] border border-white/5 h-fit">
+              <h3 className={`text-xl font-black italic uppercase tracking-widest mb-8 pb-4 border-b border-white/10 ${gender === 'Hombre' ? 'text-blue-400' : 'text-pink-400'}`}>
                 {gender.toUpperCase()}
               </h3>
               
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {UNIFORM_FIELDS.map(f => {
                   const val = gender === 'Hombre' ? uniform.maleIds?.[f.key] : uniform.femaleIds?.[f.key];
                   if (!val || val === '' || val === '0') return null;
                   return (
-                    <div key={f.key} className="flex items-center justify-between gap-2 group/item">
-                      {/* La etiqueta ahora es flexible y no se rompe */}
-                      <span className="text-[10px] text-zinc-400 uppercase font-black tracking-widest truncate">
+                    <div key={f.key} className="flex items-center justify-between gap-6 group/item">
+                      {/* Nombre: con tracking-widest para que se vea premium */}
+                      <span className="text-[11px] text-zinc-400 uppercase font-black tracking-[0.15em] whitespace-nowrap">
                         {f.label}
                       </span>
                       
-                      {/* El cuadrito de números: ahora con shrink-0 para que no se aplaste */}
-                      <span className="flex-shrink-0 text-[12px] font-mono font-bold text-white bg-white/5 px-3 py-1.5 rounded-xl border border-white/10 whitespace-nowrap min-w-[50px] text-center group-hover/item:border-red-600/50 transition">
+                      {/* Número: En su cuadrito, sin romperse jamás */}
+                      <span className="flex-shrink-0 text-[13px] font-mono font-bold text-white bg-zinc-800/50 px-4 py-2 rounded-xl border border-white/10 whitespace-nowrap group-hover/item:border-red-600/50 transition">
                         {val}
                       </span>
                     </div>
