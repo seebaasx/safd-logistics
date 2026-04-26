@@ -84,50 +84,50 @@ const UniformDetail = ({ uniform, onClose }) => (
   <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 text-left overflow-hidden">
     <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl" onClick={onClose}></div>
     
-    {/* CAMBIO: He aumentado a max-w-7xl (aprox 1280px) para que sea mucho más ancha */}
-    <div className="relative bg-[#0a0a0a] w-full max-w-7xl rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[95vh] animate-in zoom-in-95 duration-300">
+    {/* CAJA GENERAL AMPLIADA: max-w-[1400px] para que quepa todo de sobra */}
+    <div className="relative bg-[#0a0a0a] w-full max-w-[1400px] rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[95vh] animate-in zoom-in-95 duration-300">
       
-      {/* Parte Izquierda: Imagen (la mantenemos fija para que no crezca demasiado) */}
-      <div className="w-full lg:w-[45%] relative bg-zinc-950 min-h-[40vh] lg:min-h-0 shrink-0">
+      {/* Lado Izquierdo: Imagen (Ocupa el 40% para dejar más espacio al texto) */}
+      <div className="w-full lg:w-[40%] relative bg-zinc-950 min-h-[45vh] lg:min-h-0 shrink-0">
         <UniformCarousel images={uniform.imageUrls || []} />
-        <button onClick={onClose} className="absolute top-8 left-8 bg-black/60 p-4 rounded-full hover:bg-red-600 transition-all z-30 text-white"><X/></button>
+        <button onClick={onClose} className="absolute top-8 left-8 bg-black/60 p-4 rounded-full hover:bg-red-600 transition-all z-30 text-white shadow-2xl"><X/></button>
       </div>
 
-      {/* Parte Derecha: Ahora con mucho más espacio horizontal */}
-      <div className="w-full lg:w-[55%] p-8 lg:p-14 overflow-y-auto text-white">
+      {/* Lado Derecho: Los números (Ocupa el 60% para que no se amontonen) */}
+      <div className="w-full lg:w-[60%] p-8 lg:p-16 overflow-y-auto text-white">
         <div className="mb-12">
-          <span className="bg-red-600 text-[10px] font-black px-5 py-2 rounded-full uppercase tracking-widest italic inline-block mb-6">
+          <span className="bg-red-600 text-[10px] font-black dark:text-white px-5 py-2 rounded-full uppercase tracking-widest italic inline-block mb-6 shadow-lg shadow-red-900/20">
             {uniform.category}
           </span>
-          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black italic uppercase leading-none tracking-tighter mb-4 text-white">
+          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black italic uppercase leading-none tracking-tighter mb-6 text-white drop-shadow-md">
             {uniform.name}
           </h2>
-          <p className="text-zinc-500 font-medium text-base leading-relaxed max-w-2xl">
+          <p className="text-zinc-400 font-medium text-lg leading-relaxed max-w-2xl border-l-2 border-red-600 pl-6">
             {uniform.description}
           </p>
         </div>
 
-        {/* La cuadrícula ahora respira mejor gracias al ancho extra */}
+        {/* Cuadrícula de IDs con mucho espacio lateral */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
           {['Hombre', 'Mujer'].map(gender => (
-            <div key={gender} className="bg-white/[0.02] p-8 rounded-[2.5rem] border border-white/5 h-fit">
+            <div key={gender} className="bg-zinc-900/40 p-8 rounded-[2.5rem] border border-white/5 backdrop-blur-sm">
               <h3 className={`text-xl font-black italic uppercase tracking-widest mb-8 pb-4 border-b border-white/10 ${gender === 'Hombre' ? 'text-blue-400' : 'text-pink-400'}`}>
                 {gender.toUpperCase()}
               </h3>
               
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {UNIFORM_FIELDS.map(f => {
                   const val = gender === 'Hombre' ? uniform.maleIds?.[f.key] : uniform.femaleIds?.[f.key];
                   if (!val || val === '' || val === '0') return null;
                   return (
-                    <div key={f.key} className="flex items-center justify-between gap-6 group/item">
-                      {/* Nombre: con tracking-widest para que se vea premium */}
-                      <span className="text-[11px] text-zinc-400 uppercase font-black tracking-[0.15em] whitespace-nowrap">
+                    <div key={f.key} className="flex items-center justify-between gap-8 group/item">
+                      {/* El nombre ahora tiene espacio de sobra */}
+                      <span className="text-[11px] text-zinc-500 uppercase font-black tracking-[0.2em] whitespace-nowrap group-hover/item:text-white transition-colors">
                         {f.label}
                       </span>
                       
-                      {/* Número: En su cuadrito, sin romperse jamás */}
-                      <span className="flex-shrink-0 text-[13px] font-mono font-bold text-white bg-zinc-800/50 px-4 py-2 rounded-xl border border-white/10 whitespace-nowrap group-hover/item:border-red-600/50 transition">
+                      {/* El cuadro del ID: shrink-0 para que no se aplaste */}
+                      <span className="flex-shrink-0 text-[13px] font-mono font-bold text-white bg-zinc-800/80 px-5 py-2.5 rounded-2xl border border-white/10 whitespace-nowrap shadow-inner group-hover/item:border-red-600/50 transition-all">
                         {val}
                       </span>
                     </div>
@@ -141,7 +141,6 @@ const UniformDetail = ({ uniform, onClose }) => (
     </div>
   </div>
 );
-
 // --- MODALES ---
 
 const LoginModal = ({ onLogin, onClose }) => {
