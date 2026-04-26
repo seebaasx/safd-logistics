@@ -9,7 +9,6 @@ import { Reorder } from "framer-motion";
 
 // --- CONFIGURACIÓN SUPABASE ---
 const SUPABASE_URL = 'https://houcdpogyqbzvztokzrh.supabase.co';
-// PEGA AQUÍ LA CLAVE LARGA (LEGACY ANON) QUE HAS COPIADO
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhvdWNkcG9neXFienZ6dG9renJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNTgzNjUsImV4cCI6MjA5MTkzNDM2NX0.Xa9wZTToYnK44xbpgBUwwZj994VD-AeAJxXgRXINFII'; 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -37,7 +36,8 @@ const UniformCarousel = ({ images }) => {
   if (!images || images.length === 0) return null;
   return (
     <div className="relative w-full h-full group/carousel">
-      <img src={images[idx]} className="w-full h-full object-cover animate-in fade-in duration-700" alt="Vista" />
+      {/* Ajuste object-contain para no cortar el sujeto */}
+      <img src={images[idx]} className="w-full h-full object-contain object-top animate-in fade-in duration-700" alt="Vista" />
       {images.length > 1 && (
         <>
           <button type="button" onClick={(e) => { e.stopPropagation(); setIdx((idx - 1 + images.length) % images.length); }} className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full hover:bg-red-600 transition opacity-0 group-hover/carousel:opacity-100 z-20 text-white"><ChevronLeft size={20}/></button>
@@ -80,32 +80,21 @@ const DepartmentCard = ({ icon: Icon, title, desc, onClick, color = "bg-red-600"
   </div>
 );
 
-// CORRECCIÓN DEFINITIVA DE DISEÑO: ENSANCHADO MASIVO + AJUSTE DE IMAGEN PARA NO CORTAR SUBJECTS ALTOS
 const UniformDetail = ({ uniform, onClose }) => (
   <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 text-left overflow-hidden tracking-tight selection:bg-red-700/50">
     <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl" onClick={onClose}></div>
     
-    {/* MANTENEMOS EL ENSANCHADO MASIVO DE 1400px (Para IDs largos) */}
     <div className="relative bg-[#0a0a0a] w-full max-w-[1400px] rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[90vh] animate-in zoom-in-95 duration-300">
       
-      {/* LADO IZQUIERDO: EL CAMBIO CRÍTICO PARA NO CORTAR LA IMAGEN */}
-      {/* He reducido el ancho a 35%. Es clave.
-          Importante: Añado p-4 y bg-black para dar un marco de seguridad a la foto. */}
-      <div className="w-full lg:w-[35%] relative bg-black min-h-[45vh] lg:min-h-0 shrink-0 flex items-center justify-center p-4">
-        
-        {/* !!! MUY IMPORTANTE !!!
-            El componente UniformCarousel debe tener la clase 'h-full' y su 'img' interior
-            debe usar 'object-contain object-top' para no cortar el casco. 
-            Wrappeo aquí el carrusel para forzar altura. */}
+      {/* LADO IZQUIERDO: IMAGEN SIN CORTAR */}
+      <div className="w-full lg:w-[35%] relative bg-black min-h-[45vh] lg:min-h-0 shrink-0 flex items-center justify-center p-4 text-white">
         <div className="w-full h-full flex items-center justify-center">
           <UniformCarousel images={uniform.imageUrls || []} />
         </div>
-        
         <button onClick={onClose} className="absolute top-8 left-8 bg-black/60 p-4 rounded-full hover:bg-red-600 transition-all z-30 text-white shadow-2xl"><X/></button>
       </div>
 
-      {/* LADO DERECHO: MUCHO MÁS ANCHO AHORA (65% del modal) */}
-      {/* He ajustado los paddings (p-8 lg:p-14) para ganar espacio interior para los IDs */}
+      {/* LADO DERECHO: DATOS Y CÓDIGOS ABAJO */}
       <div className="w-full lg:w-[65%] p-8 lg:p-14 overflow-y-auto text-white">
         <div className="mb-10 text-white">
           <span className="bg-red-600 text-[10px] font-black dark:text-white px-5 py-2 rounded-full uppercase tracking-widest italic inline-block mb-6 shadow-lg shadow-red-900/20">
@@ -119,41 +108,50 @@ const UniformDetail = ({ uniform, onClose }) => (
           </p>
         </div>
 
-        {/* Cuadrícula de IDs con breakpoint en XL para dar más aire */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-          {['Hombre', 'Mujer'].map(gender => (
-            <div key={gender} className="bg-zinc-900/40 p-6 lg:p-8 rounded-[2.5rem] border border-white/5 backdrop-blur-sm">
-              <h3 className={`text-xl font-black italic uppercase tracking-widest mb-7 pb-4 border-b border-white/10 ${gender === 'Hombre' ? 'text-blue-400' : 'text-pink-400'}`}>
-                {gender.toUpperCase()}
-              </h3>
-              
-              <div className="space-y-4">
-                {UNIFORM_FIELDS.map(f => {
-                  const val = gender === 'Hombre' ? uniform.maleIds?.[f.key] : uniform.femaleIds?.[f.key];
-                  if (!val || val === '' || val === '0') return null;
-                  return (
-                    <div key={f.key} className="flex items-center justify-between gap-6 group/item text-white">
-                      {/* El nombre ahora tiene el espacio máximo posible */}
-                      <span className="text-[11px] text-zinc-400 uppercase font-black tracking-[0.2em] whitespace-nowrap group-hover/item:text-white transition-colors">
-                        {f.label}
-                      </span>
-                      
-                      {/* El cuadro del ID: Mantenemos el 'whitespace-nowrap' (para IDs largos) 
-                          pero el flex parent ahora es más robusto. */}
-                      <span className="flex-shrink-0 text-[13px] font-mono font-bold text-white bg-zinc-800/80 px-4 py-2.5 rounded-2xl border border-white/10 whitespace-nowrap shadow-inner group-hover/item:border-red-600/50 transition-all">
-                        {val}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+          {['Hombre', 'Mujer'].map(gender => {
+             const clothingCode = gender === 'Hombre' ? uniform.male_code : uniform.female_code;
+             return (
+               <div key={gender} className="bg-zinc-900/40 p-6 lg:p-8 rounded-[2.5rem] border border-white/5 backdrop-blur-sm flex flex-col h-full">
+                 <h3 className={`text-xl font-black italic uppercase tracking-widest mb-7 pb-4 border-b border-white/10 ${gender === 'Hombre' ? 'text-blue-400' : 'text-pink-400'}`}>
+                   {gender.toUpperCase()}
+                 </h3>
+                 
+                 <div className="space-y-4 flex-grow">
+                   {UNIFORM_FIELDS.map(f => {
+                     const val = gender === 'Hombre' ? uniform.maleIds?.[f.key] : uniform.femaleIds?.[f.key];
+                     if (!val || val === '' || val === '0') return null;
+                     return (
+                       <div key={f.key} className="flex items-center justify-between gap-6 group/item text-white">
+                         <span className="text-[11px] text-zinc-400 uppercase font-black tracking-[0.2em] whitespace-nowrap">{f.label}</span>
+                         <span className="flex-shrink-0 text-[13px] font-mono font-bold text-white bg-zinc-800/80 px-4 py-2.5 rounded-2xl border border-white/10 whitespace-nowrap">{val}</span>
+                       </div>
+                     );
+                   })}
+                 </div>
+
+                 {/* BLOQUE CÓDIGO VESTUARIO ABAJO (RECUADROS AZUL/ROJO) */}
+                 {clothingCode && (
+                   <div className="mt-8 pt-6 border-t border-white/10">
+                     <div className="flex flex-col gap-2">
+                       <span className="text-[10px] text-[#d4af37] uppercase font-black tracking-[0.3em]">CÓDIGO VESTUARIO</span>
+                       <div className="bg-[#d4af37]/5 border border-[#d4af37]/20 p-4 rounded-2xl text-white">
+                         <code className="text-[#d4af37] font-mono font-bold text-sm break-all">
+                           {clothingCode}
+                         </code>
+                       </div>
+                     </div>
+                   </div>
+                 )}
+               </div>
+             );
+          })}
         </div>
       </div>
     </div>
   </div>
 );
+
 // --- MODALES ---
 
 const LoginModal = ({ onLogin, onClose }) => {
@@ -181,6 +179,7 @@ const LoginModal = ({ onLogin, onClose }) => {
 const AddUniformModal = ({ onSave, onClose }) => {
   const [formData, setFormData] = useState({
     name: '', category: 'Reglamentario', dept: 'General', description: '', imageUrls: '', portada: '',
+    male_code: '', female_code: '',
     male: {}, female: {}
   });
   const handleMaleChange = (f, v) => setFormData(p => ({...p, male: {...p.male, [f]: v}}));
@@ -190,18 +189,24 @@ const AddUniformModal = ({ onSave, onClose }) => {
       <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose}></div>
       <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-[#d4af37]/40 shadow-2xl max-h-[90vh] overflow-y-auto text-left">
         <h2 className="text-[#d4af37] text-2xl font-black italic uppercase mb-10 pb-6 border-b border-white/5">REGISTRAR NUEVA UNIFORMIDAD</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-white">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-white text-white">
           <div className="space-y-6">
             <input placeholder="Nombre" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, name: e.target.value})} />
+            
+            <div className="grid grid-cols-1 gap-4">
+              <input placeholder="Código Vestuario Hombre" className="w-full bg-[#161616] p-4 rounded-xl border border-blue-900/30 text-blue-400 outline-none placeholder:text-zinc-600" onChange={e => setFormData({...formData, male_code: e.target.value})} />
+              <input placeholder="Código Vestuario Mujer" className="w-full bg-[#161616] p-4 rounded-xl border border-pink-900/30 text-pink-400 outline-none placeholder:text-zinc-600" onChange={e => setFormData({...formData, female_code: e.target.value})} />
+            </div>
+
             <input placeholder="URL Portada" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 text-white">
               <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option></select>
               <select className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, dept: e.target.value})}><option>General</option><option>AIR OPS</option><option>FIRE MARSHAL</option><option>R.T.D.</option><option>MARINE</option><option>WILDLAND</option><option>PARAMEDIC</option><option>HAZMAT</option><option>TTU</option></select>
             </div>
             <textarea placeholder="Descripción..." className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white h-24 outline-none" onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
-            <textarea placeholder="Galería URLs (separadas por coma)" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
+            <textarea placeholder="Galería URLs" className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 h-24 text-[10px] text-white outline-none" onChange={e => setFormData({...formData, imageUrls: e.target.value})}></textarea>
           </div>
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-2 gap-8 text-white">
             {['male', 'female'].map(g => (
               <div key={g} className="space-y-2">
                 <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-400' : 'text-pink-400'}`}>{g === 'male' ? 'HOMBRE' : 'MUJER'}</p>
@@ -224,6 +229,7 @@ const AddUniformModal = ({ onSave, onClose }) => {
 const EditUniformModal = ({ uniform, onSave, onClose }) => {
   const [formData, setFormData] = useState({
     id: uniform.id, name: uniform.name, category: uniform.category, dept: uniform.dept || 'General', description: uniform.description || '', portada: uniform.portada || '',
+    male_code: uniform.male_code || '', female_code: uniform.female_code || '',
     imageUrls: Array.isArray(uniform.imageUrls) ? uniform.imageUrls.join(', ') : '',
     male: uniform.maleIds || {}, female: uniform.femaleIds || {}
   });
@@ -233,14 +239,20 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 text-white text-left">
       <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose}></div>
-      <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-red-600/40 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-[#0d0d0d] w-full max-w-6xl p-10 rounded-[2.5rem] border border-red-600/40 shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/5 text-white">
-            <h2 className="text-red-600 text-2xl font-black italic uppercase tracking-widest">MODIFICAR UNIFORMIDAD</h2>
-            <X onClick={onClose} className="cursor-pointer hover:text-red-600 transition" />
+            <h2 className="text-red-600 text-2xl font-black italic uppercase tracking-widest text-white">MODIFICAR UNIFORMIDAD</h2>
+            <X onClick={onClose} className="cursor-pointer hover:text-red-600 transition text-white" />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-white">
           <div className="space-y-6">
             <input value={formData.name} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, name: e.target.value})} />
+            
+            <div className="grid grid-cols-1 gap-4">
+              <input value={formData.male_code} placeholder="Código Hombre" className="w-full bg-[#161616] p-4 rounded-xl border border-blue-900/30 text-blue-400 outline-none" onChange={e => setFormData({...formData, male_code: e.target.value})} />
+              <input value={formData.female_code} placeholder="Código Mujer" className="w-full bg-[#161616] p-4 rounded-xl border border-pink-900/30 text-pink-400 outline-none" onChange={e => setFormData({...formData, female_code: e.target.value})} />
+            </div>
+
             <input value={formData.portada} className="w-full bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, portada: e.target.value})} />
             <div className="grid grid-cols-2 gap-4">
               <select value={formData.category} className="bg-[#161616] p-4 rounded-xl border border-white/5 text-white outline-none" onChange={e => setFormData({...formData, category: e.target.value})}><option>Reglamentario</option><option>Departamento</option><option>Actualizado</option></select>
@@ -255,7 +267,7 @@ const EditUniformModal = ({ uniform, onSave, onClose }) => {
                 <p className={`text-[10px] font-black uppercase mb-3 ${g === 'male' ? 'text-blue-400' : 'text-pink-400'}`}>{g.toUpperCase()}</p>
                 {UNIFORM_FIELDS.map(f => (
                   <div key={f.key} className="flex flex-col text-white">
-                    <span className="text-[8px] text-zinc-600 uppercase font-bold">{f.label}</span>
+                    <span className="text-[8px] text-zinc-600 uppercase font-bold text-white">{f.label}</span>
                     <input value={formData[g][f.key] || ''} className="bg-black/40 p-2 rounded border border-white/5 text-[10px] text-white outline-none" onChange={e => g === 'male' ? handleMaleChange(f.key, e.target.value) : handleFemaleChange(f.key, e.target.value)} />
                   </div>
                 ))}
@@ -379,7 +391,7 @@ export default function App() {
       <nav className="fixed w-full z-[60] bg-black/60 backdrop-blur-xl border-b border-white/10 h-20 flex items-center justify-between px-6 text-white">
         <div className="flex items-center gap-4 cursor-pointer" onClick={() => {setView('landing'); setSelectedDept(null);}}>
           <img src={LOGO_URL} className="h-12 w-12" alt="SAFD" />
-          <div className="text-left hidden sm:block">
+          <div className="text-left hidden sm:block text-white">
             <h1 className="text-xl font-black italic uppercase leading-none">SAFD UNIFORMIDAD</h1>
             <p className="text-[9px] text-[#d4af37] font-bold tracking-[0.3em] uppercase">San Andreas Fire & Rescue</p>
           </div>
@@ -401,7 +413,7 @@ export default function App() {
           <section className="relative h-screen flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/80 z-10"></div>
             {HERO_IMAGES.map((img, idx) => <img key={idx} src={img} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentHeroIdx ? 'opacity-40' : 'opacity-0'}`} alt="Hero" />)}
-            <div className="relative z-20 text-center">
+            <div className="relative z-20 text-center text-white">
               <img src={LOGO_URL} className="h-48 w-48 mx-auto mb-10 drop-shadow-[0_0_50px_rgba(185,28,28,0.5)] animate-pulse" alt="Logo" />
               <h2 className="text-[#d4af37] text-xs font-black tracking-[1.5em] mb-6 uppercase italic">UNIFORMIDAD • SISTEMA</h2>
               <h1 className="text-7xl md:text-[11rem] font-black italic uppercase leading-none tracking-tighter text-white">SAFD <span className="text-red-700">PORTAL</span></h1>
@@ -412,7 +424,6 @@ export default function App() {
   <h2 className="text-5xl font-black italic uppercase mb-20 text-left">Divisiones / Departamentos <span className="text-red-700">SAFD</span></h2>
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
     
-    {/* 1. R.T.D. - Estrella y Morado */}
     <DepartmentCard 
       icon={Star} 
       title="R.T.D." 
@@ -421,7 +432,6 @@ export default function App() {
       onClick={() => {setView('department'); setSelectedDept('R.T.D.');}} 
     />
 
-    {/* 2. AIR OPS - Helicóptero y Aguamarina */}
     <DepartmentCard 
       icon={Helicopter} 
       title="AIR OPS" 
@@ -430,7 +440,6 @@ export default function App() {
       onClick={() => {setView('department'); setSelectedDept('AIR OPS');}} 
     />
 
-    {/* 3. TTU - Casco médico y Negro */}
     <DepartmentCard 
       icon={HardHat} 
       title="TTU" 
@@ -439,7 +448,6 @@ export default function App() {
       onClick={() => {setView('department'); setSelectedDept('TTU');}} 
     />
 
-    {/* 4. FIRE MARSHAL - Lupa y Amarillo */}
     <DepartmentCard 
       icon={Search} 
       title="FIRE MARSHAL" 
@@ -448,7 +456,6 @@ export default function App() {
       onClick={() => {setView('department'); setSelectedDept('FIRE MARSHAL');}} 
     />
 
-    {/* 5. MARINE - Ancla y Azul Marino */}
     <DepartmentCard 
       icon={Anchor} 
       title="MARINE" 
@@ -457,7 +464,6 @@ export default function App() {
       onClick={() => {setView('department'); setSelectedDept('MARINE');}} 
     />
 
-    {/* 6. WILDLAND - Árbol y Rojo */}
     <DepartmentCard 
       icon={TreePine} 
       title="WILDLAND" 
@@ -466,7 +472,6 @@ export default function App() {
       onClick={() => {setView('department'); setSelectedDept('WILDLAND');}} 
     />
 
-    {/* 7. PARAMEDIC - Estetoscopio y Verde Lima */}
     <DepartmentCard 
       icon={Stethoscope} 
       title="PARAMEDIC" 
@@ -475,7 +480,6 @@ export default function App() {
       onClick={() => {setView('department'); setSelectedDept('PARAMEDIC');}} 
     />
 
-    {/* 8. HAZMAT - Tóxico y Naranja */}
     <DepartmentCard 
       icon={Biohazard} 
       title="HAZMAT" 
@@ -487,8 +491,8 @@ export default function App() {
   </div>
 </section>
 
-          <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left text-white">
-            <h2 className="text-5xl font-black italic uppercase mb-10">Uniformidad <span className="text-red-700">General</span></h2>
+          <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5 text-left text-white text-white">
+            <h2 className="text-5xl font-black italic uppercase mb-10 text-white">Uniformidad <span className="text-red-700">General</span></h2>
             {isAdmin ? (
               <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === 'General' || !u.dept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                 {uniforms.filter(u => u.dept === 'General' || !u.dept).map(u => (
@@ -507,7 +511,7 @@ export default function App() {
       ) : (
         <div className="pt-32 pb-32 max-w-7xl mx-auto px-6 text-left min-h-screen text-white">
           <button onClick={() => {setView('landing'); setSelectedDept(null);}} className="text-zinc-500 hover:text-red-500 mb-12 font-black uppercase text-[10px] flex items-center gap-2 tracking-widest text-white"><ArrowLeft size={16}/> Volver</button>
-          <h2 className="text-6xl md:text-8xl font-black italic uppercase mb-20">{selectedDept}</h2>
+          <h2 className="text-6xl md:text-8xl font-black italic uppercase mb-20 text-white">{selectedDept}</h2>
           {isAdmin ? (
             <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === selectedDept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 text-white">
               {uniforms.filter(u => u.dept === selectedDept).map(u => (
@@ -532,7 +536,7 @@ export default function App() {
       {notification && (
         <div className="fixed bottom-10 right-10 z-[300] p-6 rounded-3xl bg-zinc-900 border border-[#d4af37]/30 shadow-2xl flex items-center gap-4 animate-in slide-in-from-right duration-500 text-white">
           <AlertCircle size={20} className="text-[#d4af37]" />
-          <span className="font-bold uppercase text-[10px] tracking-widest">{notification}</span>
+          <span className="font-bold uppercase text-[10px] tracking-widest text-white">{notification}</span>
         </div>
       )}
 
