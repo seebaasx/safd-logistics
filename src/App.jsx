@@ -36,7 +36,6 @@ const UniformCarousel = ({ images }) => {
   if (!images || images.length === 0) return null;
   return (
     <div className="relative w-full h-full group/carousel">
-      {/* Ajuste object-contain para no cortar el sujeto */}
       <img src={images[idx]} className="w-full h-full object-contain object-top animate-in fade-in duration-700" alt="Vista" />
       {images.length > 1 && (
         <>
@@ -80,77 +79,81 @@ const DepartmentCard = ({ icon: Icon, title, desc, onClick, color = "bg-red-600"
   </div>
 );
 
-const UniformDetail = ({ uniform, onClose }) => (
-  <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 text-left overflow-hidden tracking-tight selection:bg-red-700/50">
-    <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl" onClick={onClose}></div>
-    
-    <div className="relative bg-[#0a0a0a] w-full max-w-[1400px] rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[90vh] animate-in zoom-in-95 duration-300">
+const UniformDetail = ({ uniform, onClose }) => {
+  // Regla especial para el uniforme de Variantes
+  const isVariantes = uniform.name?.toUpperCase().includes('VARIANTES');
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 text-left overflow-hidden tracking-tight selection:bg-red-700/50">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl" onClick={onClose}></div>
       
-      {/* LADO IZQUIERDO: IMAGEN SIN CORTAR */}
-      <div className="w-full lg:w-[35%] relative bg-black min-h-[45vh] lg:min-h-0 shrink-0 flex items-center justify-center p-4 text-white">
-        <div className="w-full h-full flex items-center justify-center">
-          <UniformCarousel images={uniform.imageUrls || []} />
-        </div>
-        <button onClick={onClose} className="absolute top-8 left-8 bg-black/60 p-4 rounded-full hover:bg-red-600 transition-all z-30 text-white shadow-2xl"><X/></button>
-      </div>
-
-      {/* LADO DERECHO: DATOS Y CÓDIGOS ABAJO */}
-      <div className="w-full lg:w-[65%] p-8 lg:p-14 overflow-y-auto text-white">
-        <div className="mb-10 text-white">
-          <span className="bg-red-600 text-[10px] font-black dark:text-white px-5 py-2 rounded-full uppercase tracking-widest italic inline-block mb-6 shadow-lg shadow-red-900/20">
-            {uniform.category}
-          </span>
-          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black italic uppercase leading-none tracking-tighter mb-4 text-white drop-shadow-md">
-            {uniform.name}
-          </h2>
-          <p className="text-zinc-500 font-medium text-base leading-relaxed max-w-2xl border-l border-red-600 pl-6">
-            {uniform.description}
-          </p>
+      <div className="relative bg-[#0a0a0a] w-full max-w-[1400px] rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[90vh] animate-in zoom-in-95 duration-300">
+        
+        <div className="w-full lg:w-[35%] relative bg-black min-h-[45vh] lg:min-h-0 shrink-0 flex items-center justify-center p-4 text-white">
+          <div className="w-full h-full flex items-center justify-center">
+            <UniformCarousel images={uniform.imageUrls || []} />
+          </div>
+          <button onClick={onClose} className="absolute top-8 left-8 bg-black/60 p-4 rounded-full hover:bg-red-600 transition-all z-30 text-white shadow-2xl"><X/></button>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-          {['Hombre', 'Mujer'].map(gender => {
-             const clothingCode = gender === 'Hombre' ? uniform.male_code : uniform.female_code;
-             return (
-               <div key={gender} className="bg-zinc-900/40 p-6 lg:p-8 rounded-[2.5rem] border border-white/5 backdrop-blur-sm flex flex-col h-full">
-                 <h3 className={`text-xl font-black italic uppercase tracking-widest mb-7 pb-4 border-b border-white/10 ${gender === 'Hombre' ? 'text-blue-400' : 'text-pink-400'}`}>
-                   {gender.toUpperCase()}
-                 </h3>
-                 
-                 <div className="space-y-4 flex-grow">
-                   {UNIFORM_FIELDS.map(f => {
-                     const val = gender === 'Hombre' ? uniform.maleIds?.[f.key] : uniform.femaleIds?.[f.key];
-                     if (!val || val === '' || val === '0') return null;
-                     return (
-                       <div key={f.key} className="flex items-center justify-between gap-6 group/item text-white">
-                         <span className="text-[11px] text-zinc-400 uppercase font-black tracking-[0.2em] whitespace-nowrap">{f.label}</span>
-                         <span className="flex-shrink-0 text-[13px] font-mono font-bold text-white bg-zinc-800/80 px-4 py-2.5 rounded-2xl border border-white/10 whitespace-nowrap">{val}</span>
-                       </div>
-                     );
-                   })}
-                 </div>
+        <div className="w-full lg:w-[65%] p-8 lg:p-14 overflow-y-auto text-white">
+          <div className="mb-10 text-white">
+            <span className="bg-red-600 text-[10px] font-black dark:text-white px-5 py-2 rounded-full uppercase tracking-widest italic inline-block mb-6 shadow-lg shadow-red-900/20">
+              {uniform.category}
+            </span>
+            <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black italic uppercase leading-none tracking-tighter mb-4 text-white drop-shadow-md">
+              {uniform.name}
+            </h2>
+            <p className="text-zinc-500 font-medium text-base leading-relaxed max-w-2xl border-l border-red-600 pl-6">
+              {uniform.description}
+            </p>
+          </div>
 
-                 {/* BLOQUE CÓDIGO VESTUARIO ABAJO (RECUADROS AZUL/ROJO) */}
-                 {clothingCode && (
-                   <div className="mt-8 pt-6 border-t border-white/10">
-                     <div className="flex flex-col gap-2">
-                       <span className="text-[10px] text-[#d4af37] uppercase font-black tracking-[0.3em]">CÓDIGO VESTUARIO</span>
-                       <div className="bg-[#d4af37]/5 border border-[#d4af37]/20 p-4 rounded-2xl text-white">
-                         <code className="text-[#d4af37] font-mono font-bold text-sm break-all">
-                           {clothingCode}
-                         </code>
-                       </div>
-                     </div>
-                   </div>
-                 )}
-               </div>
-             );
-          })}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            {['Hombre', 'Mujer'].map(gender => {
+              const clothingCode = gender === 'Hombre' ? uniform.male_code : uniform.female_code;
+              return (
+                <div key={gender} className="bg-zinc-900/40 p-6 lg:p-8 rounded-[2.5rem] border border-white/5 backdrop-blur-sm flex flex-col h-full">
+                  <h3 className={`text-xl font-black italic uppercase tracking-widest mb-7 pb-4 border-b border-white/10 ${gender === 'Hombre' ? 'text-blue-400' : 'text-pink-400'}`}>
+                    {gender.toUpperCase()}
+                  </h3>
+                  
+                  <div className="space-y-4 flex-grow">
+                    {UNIFORM_FIELDS.map(f => {
+                      const val = gender === 'Hombre' ? uniform.maleIds?.[f.key] : uniform.femaleIds?.[f.key];
+                      if (!val || val === '' || val === '0') return null;
+                      return (
+                        <div key={f.key} className={`flex ${isVariantes ? 'flex-col gap-2' : 'flex-row items-center justify-between gap-6'} group/item text-white`}>
+                          <span className="text-[11px] text-zinc-400 uppercase font-black tracking-[0.2em] whitespace-nowrap">{f.label}</span>
+                          <span className={`flex-shrink-0 text-[13px] font-mono font-bold text-white bg-zinc-800/80 px-4 py-2.5 rounded-2xl border border-white/10 shadow-inner ${isVariantes ? 'w-full text-left' : 'whitespace-nowrap'}`}>
+                            {val}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {clothingCode && (
+                    <div className="mt-8 pt-6 border-t border-white/10">
+                      <div className="flex flex-col gap-2">
+                        <span className="text-[10px] text-[#d4af37] uppercase font-black tracking-[0.3em]">CÓDIGO VESTUARIO</span>
+                        <div className="bg-[#d4af37]/5 border border-[#d4af37]/20 p-4 rounded-2xl text-white">
+                          <code className="text-[#d4af37] font-mono font-bold text-sm break-all">
+                            {clothingCode}
+                          </code>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // --- MODALES ---
 
@@ -187,7 +190,7 @@ const AddUniformModal = ({ onSave, onClose }) => {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 text-white">
       <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose}></div>
-      <div className="relative bg-[#0d0d0d] w-full max-w-5xl p-10 rounded-[2.5rem] border border-[#d4af37]/40 shadow-2xl max-h-[90vh] overflow-y-auto text-left">
+      <div className="relative bg-[#0d0d0d] w-full max-w-6xl p-10 rounded-[2.5rem] border border-[#d4af37]/40 shadow-2xl max-h-[90vh] overflow-y-auto text-left">
         <h2 className="text-[#d4af37] text-2xl font-black italic uppercase mb-10 pb-6 border-b border-white/5">REGISTRAR NUEVA UNIFORMIDAD</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-white text-white">
           <div className="space-y-6">
@@ -388,10 +391,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-red-700/50 font-sans tracking-tight">
-      <nav className="fixed w-full z-[60] bg-black/60 backdrop-blur-xl border-b border-white/10 h-20 flex items-center justify-between px-6 text-white">
+      <nav className="fixed w-full z-[60] bg-black/60 backdrop-blur-xl border-b border-white/10 h-20 flex items-center justify-between px-6 text-white text-white">
         <div className="flex items-center gap-4 cursor-pointer" onClick={() => {setView('landing'); setSelectedDept(null);}}>
           <img src={LOGO_URL} className="h-12 w-12" alt="SAFD" />
-          <div className="text-left hidden sm:block text-white">
+          <div className="text-left hidden sm:block">
             <h1 className="text-xl font-black italic uppercase leading-none">SAFD UNIFORMIDAD</h1>
             <p className="text-[9px] text-[#d4af37] font-bold tracking-[0.3em] uppercase">San Andreas Fire & Rescue</p>
           </div>
@@ -413,7 +416,7 @@ export default function App() {
           <section className="relative h-screen flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/80 z-10"></div>
             {HERO_IMAGES.map((img, idx) => <img key={idx} src={img} className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentHeroIdx ? 'opacity-40' : 'opacity-0'}`} alt="Hero" />)}
-            <div className="relative z-20 text-center text-white">
+            <div className="relative z-20 text-center text-white text-white">
               <img src={LOGO_URL} className="h-48 w-48 mx-auto mb-10 drop-shadow-[0_0_50px_rgba(185,28,28,0.5)] animate-pulse" alt="Logo" />
               <h2 className="text-[#d4af37] text-xs font-black tracking-[1.5em] mb-6 uppercase italic">UNIFORMIDAD • SISTEMA</h2>
               <h1 className="text-7xl md:text-[11rem] font-black italic uppercase leading-none tracking-tighter text-white">SAFD <span className="text-red-700">PORTAL</span></h1>
@@ -509,9 +512,9 @@ export default function App() {
           </section>
         </div>
       ) : (
-        <div className="pt-32 pb-32 max-w-7xl mx-auto px-6 text-left min-h-screen text-white">
+        <div className="pt-32 pb-32 max-w-7xl mx-auto px-6 text-left min-h-screen text-white text-white">
           <button onClick={() => {setView('landing'); setSelectedDept(null);}} className="text-zinc-500 hover:text-red-500 mb-12 font-black uppercase text-[10px] flex items-center gap-2 tracking-widest text-white"><ArrowLeft size={16}/> Volver</button>
-          <h2 className="text-6xl md:text-8xl font-black italic uppercase mb-20 text-white">{selectedDept}</h2>
+          <h2 className="text-6xl md:text-8xl font-black italic uppercase mb-20">{selectedDept}</h2>
           {isAdmin ? (
             <Reorder.Group axis="x" values={uniforms.filter(u => u.dept === selectedDept)} onReorder={handleReorder} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 text-white">
               {uniforms.filter(u => u.dept === selectedDept).map(u => (
@@ -534,13 +537,13 @@ export default function App() {
       {editingUniform && <EditUniformModal uniform={editingUniform} onSave={updateUniform} onClose={() => setEditingUniform(null)} />}
       
       {notification && (
-        <div className="fixed bottom-10 right-10 z-[300] p-6 rounded-3xl bg-zinc-900 border border-[#d4af37]/30 shadow-2xl flex items-center gap-4 animate-in slide-in-from-right duration-500 text-white">
+        <div className="fixed bottom-10 right-10 z-[300] p-6 rounded-3xl bg-zinc-900 border border-[#d4af37]/30 shadow-2xl flex items-center gap-4 animate-in slide-in-from-right duration-500 text-white text-white text-white">
           <AlertCircle size={20} className="text-[#d4af37]" />
-          <span className="font-bold uppercase text-[10px] tracking-widest text-white">{notification}</span>
+          <span className="font-bold uppercase text-[10px] tracking-widest">{notification}</span>
         </div>
       )}
 
-      <footer className="py-40 border-t border-white/5 text-center opacity-30 text-white">
+      <footer className="py-40 border-t border-white/5 text-center opacity-30 text-white text-white">
         <p className="text-zinc-700 text-[10px] uppercase font-black tracking-[1em] mb-4 text-white">SAFD UNIFORMIDAD • STATE OF SAN ANDREAS</p>
       </footer>
     </div>
